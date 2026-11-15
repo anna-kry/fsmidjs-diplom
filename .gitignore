@@ -1,7 +1,50 @@
-node_modules
-dist
+# ===== Зависимости =====
+node_modules/
+
+# ===== Результаты сборки =====
+dist/
+build/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+.vite/
+.cache/
+.parcel-cache/
+.eslintcache
+
+# ===== Переменные окружения (в репозитории только пример) =====
 .env
-uploads/
+.env.*
+!.env-example
+
+# ===== Загрузки пользователей (папку оставляем через .gitkeep) =====
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ===== Данные БД =====
+pgdata/
+postgres-data/
+
+# ===== Логи =====
+logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ===== Временные файлы =====
+tmp/
+temp/
+*.tmp
+
+# ===== Редакторы и IDE =====
+.vscode/
+.idea/
+.vs/
+*.swp
+*.swo
+
+# ===== ОС =====
 .DS_Store
+Thumbs.db
+desktop.ini

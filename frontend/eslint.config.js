@@ -18,6 +18,11 @@ export default defineConfig([
     languageOptions: {
       ecmaVersion: 2022,
       globals: globals.browser,
+      parserOptions: {
+        // Явный корень TS-конфига для этого workspace: без него typescript-eslint
+        // выводит его из стека вызовов и падает при нескольких конфигах в одном процессе.
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
 ])

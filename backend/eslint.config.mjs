@@ -15,6 +15,9 @@ export default defineConfig([
       },
       parserOptions: {
         sourceType: 'module',
+        // Явный корень TS-конфига для этого workspace: без него typescript-eslint
+        // выводит его из стека вызовов и падает при нескольких конфигах в одном процессе.
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
