@@ -12,22 +12,94 @@ import AdminUsersPage from '../pages/admin/AdminUsersPage';
 import ManagerUsersPage from '../pages/manager/ManagerUsersPage';
 import ManagerRentalsPage from '../pages/manager/ManagerRentalsPage';
 import ManagerSupportPage from '../pages/manager/ManagerSupportPage';
+import GuestRoute from '../components/guards/GuestRoute';
+import RoleRoute from '../components/guards/RoleRoute';
 
 const AppRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/books/:id" element={<BookPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/my/rentals" element={<MyRentalsPage />} />
-      <Route path="/support" element={<SupportPage />} />
-      <Route path="/admin/libraries" element={<AdminLibrariesPage />} />
-      <Route path="/admin/books" element={<AdminBooksPage />} />
-      <Route path="/admin/users" element={<AdminUsersPage />} />
-      <Route path="/manager/users" element={<ManagerUsersPage />} />
-      <Route path="/manager/rentals" element={<ManagerRentalsPage />} />
-      <Route path="/manager/support" element={<ManagerSupportPage />} />
+      <Route
+        path="/login"
+        element={
+          <GuestRoute>
+            <LoginPage />
+          </GuestRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <GuestRoute>
+            <RegisterPage />
+          </GuestRoute>
+        }
+      />
+      <Route
+        path="/my/rentals"
+        element={
+          <RoleRoute roles={['client']}>
+            <MyRentalsPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/support"
+        element={
+          <RoleRoute roles={['client']}>
+            <SupportPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/libraries"
+        element={
+          <RoleRoute roles={['admin']}>
+            <AdminLibrariesPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/books"
+        element={
+          <RoleRoute roles={['admin']}>
+            <AdminBooksPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <RoleRoute roles={['admin']}>
+            <AdminUsersPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/manager/users"
+        element={
+          <RoleRoute roles={['manager']}>
+            <ManagerUsersPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/manager/rentals"
+        element={
+          <RoleRoute roles={['manager']}>
+            <ManagerRentalsPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/manager/support"
+        element={
+          <RoleRoute roles={['manager']}>
+            <ManagerSupportPage />
+          </RoleRoute>
+        }
+      />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

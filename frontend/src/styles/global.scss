@@ -1,0 +1,177 @@
+@import './variables';
+
+// Auth popups (общие для LoginPage и RegisterPage, кнопка используется и в NotFoundPage)
+
+.auth {
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: $zindex-backdrop;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  &__popup {
+    background: $color-bg-popup;
+    border: 1px solid $color-border;
+    border-radius: $radius-popup;
+    width: 100%;
+    max-width: 480px;
+    padding: 40px 32px;
+    box-sizing: border-box;
+    position: relative;
+    outline: none;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 1.2;
+    color: $color-text;
+    text-align: center;
+    margin: 0 0 32px;
+  }
+
+  &__label {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 16px;
+    color: $color-text;
+    margin: 0 0 8px;
+    display: block;
+  }
+
+  &__input {
+    font-family: $font-family;
+    font-weight: 400;
+    font-size: 16px;
+    color: $color-text;
+    background: $color-input-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-input;
+    padding: 16px 24px 16px 64px;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $color-border;
+    }
+
+    &::placeholder {
+      color: $color-placeholder;
+    }
+
+    &--invalid {
+      border-color: $color-error;
+    }
+  }
+
+  &__input-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  &__eye {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  &__button {
+    /* Пустой класс для обратной совместимости в разметке */
+  }
+
+  &__footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 16px;
+    color: $color-text;
+
+    a {
+      color: $color-text;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: $color-text;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+// Основная кнопка — базовые стили, цвета через модификаторы
+.button__main {
+  font-family: $font-family;
+  font-weight: 600;
+  font-size: 16px;
+  border: 1px solid $color-border;
+  border-radius: $radius-input;
+  padding: 16px 24px;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: $color-button-shadow;
+  display: block;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.button__main--primary {
+  color: $color-button-primary-text;
+  background: $color-button-primary;
+
+  &:hover:not(:disabled) {
+    background: $color-button-primary-hover;
+  }
+}
+
+.button__main--secondary {
+  color: $color-button-secondary-text;
+  background: $color-button-secondary;
+
+  &:hover:not(:disabled) {
+    background: $color-button-secondary-hover;
+  }
+}

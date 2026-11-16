@@ -1,4 +1,11 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+@import './variables';
+@import './global';
+@import './pages/LoginPage';
+@import './pages/RegisterPage';
+@import './pages/NotFoundPage';
 
 body {
   margin: 0;

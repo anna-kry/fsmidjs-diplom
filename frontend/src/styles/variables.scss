@@ -1,0 +1,31 @@
+// Дизайн-токены проекта (из макета Figma)
+
+// Цвета
+$color-bg-popup: #f6fff7;
+$color-border: #000000;
+$color-input-bg: #fffef0;
+$color-button-shadow: 4px 4px 0px #000;
+$color-text: #000000;
+$color-placeholder: #93A497;
+$color-error: #dc3545;
+$color-success-green: #0f5a4a;
+
+// Кнопка primary (жёлтая)
+$color-button-primary: #ffc33e;
+$color-button-primary-hover: #ffd26e;
+$color-button-primary-text: #000000;
+
+// Кнопка secondary (тёмно-зелёная, по макету Figma)
+$color-button-secondary: #2d5a4a;
+$color-button-secondary-hover: #3a6e58;
+$color-button-secondary-text: #ffffff;
+
+// Шрифт
+$font-family: 'Montserrat', sans-serif;
+
+// Радиусы
+$radius-popup: 32px;
+$radius-input: 16px;
+
+// Z-index
+$zindex-backdrop: 1060;

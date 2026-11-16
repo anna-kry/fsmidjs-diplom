@@ -6,6 +6,30 @@ export interface User {
   id: ID;
   email: string;
   name: string;
+  contactPhone?: string | null;
+  role: UserRole;
+}
+
+/** Пользователь в списках admin/manager: API не возвращает роль и пароль. */
+export interface UserListItem {
+  id: ID;
+  email: string;
+  name: string;
+  contactPhone?: string | null;
+}
+
+/** Фильтры списков пользователей (частичное совпадение). */
+export interface UserFilters {
+  email: string;
+  name: string;
+  contactPhone: string;
+}
+
+/** Тело POST /api/admin/users. */
+export interface CreateUserInput {
+  email: string;
+  password: string;
+  name: string;
   contactPhone?: string;
   role: UserRole;
 }

@@ -1,0 +1,47 @@
+@import '../variables';
+
+// Страница 404
+
+.not-found {
+  background: $color-bg-popup;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+
+  &__title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 32px;
+    color: $color-text;
+    margin: 0 0 8px;
+  }
+
+  &__code {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 120px;
+    color: $color-success-green;
+    margin: 0;
+    line-height: 1;
+  }
+
+  &__subtitle {
+    font-family: $font-family;
+    font-weight: 400;
+    font-size: 18px;
+    color: $color-text;
+    margin: 16px 0 32px;
+  }
+
+  &__books {
+    font-size: 120px;
+    line-height: 1;
+    margin-bottom: 32px;
+    opacity: 0.6;
+  }
+}
