@@ -34,25 +34,43 @@ export interface CreateUserInput {
   role: UserRole;
 }
 
+/** Библиотека из API (GET /api/common/libraries). */
 export interface Library {
   id: ID;
   name: string;
   address: string;
-  description?: string;
+  description?: string | null;
 }
 
+/** Библиотека внутри книги: API возвращает только { id, name, address }. */
+export interface BookLibrary {
+  id: ID;
+  name: string;
+  address: string;
+}
+
+/** Книга из API (ответ toBookResponse): nullable-поля приходят как null. */
 export interface Book {
   id: ID;
-  libraryId: ID;
   title: string;
   author: string;
-  year?: number;
-  description?: string;
-  coverImage?: string;
+  year?: number | null;
+  description?: string | null;
+  coverImage?: string | null;
   isAvailable: boolean;
   totalCopies: number;
   availableCopies: number;
-  library?: Library;
+  createdAt: string;
+  updatedAt: string;
+  library?: BookLibrary | null;
+}
+
+/** Фильтры поиска книг (GET /api/common/books, раздел 6.3). */
+export interface BookFilters {
+  library: string;
+  author: string;
+  title: string;
+  availableOnly: boolean;
 }
 
 export type RentalStatus = 'reserved' | 'active' | 'completed' | 'cancelled';

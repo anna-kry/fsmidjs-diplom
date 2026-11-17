@@ -1,0 +1,116 @@
+@import '../variables';
+
+// Футер: светло-зелёный фон, скруглённый верх, зелёные круги соцсетей.
+// Прижат к низу страницы через flex-колонку в Layout (sticky footer).
+
+.footer {
+  position: relative;
+  background: $color-bg-footer;
+  border-top: 1px solid $color-border;
+  border-radius: $radius-card $radius-card 0 0;
+  overflow: hidden;
+  margin-top: auto;
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding-top: 48px;
+    padding-bottom: 48px;
+    box-sizing: border-box;
+  }
+
+  &__logo {
+    font-family: $font-family;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 1.2;
+    color: $color-text;
+  }
+
+  &__socials {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  &__social {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: $color-accent;
+    border: 1px solid $color-border;
+    box-shadow: $shadow-card;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+
+    img {
+      width: 34px;
+      height: 34px;
+      display: block;
+    }
+
+    &:hover {
+      transform: translate(-2px, -2px);
+    }
+  }
+
+  &__policy {
+    font-family: $font-family;
+    font-size: 14px;
+    color: $color-placeholder;
+    text-decoration: underline;
+
+    &:hover {
+      color: $color-text;
+    }
+  }
+
+  // Декоративные blob-капли по краям
+  &__blob {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+
+    &--left {
+      left: 0;
+      bottom: 0;
+      width: 300px;
+      height: auto;
+    }
+
+    &--right {
+      right: 0;
+      bottom: 0;
+      width: 220px;
+      height: auto;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    &__logo {
+      font-size: 28px;
+    }
+
+    &__social {
+      width: 56px;
+      height: 56px;
+
+      img {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    &__blob {
+      display: none;
+    }
+  }
+}

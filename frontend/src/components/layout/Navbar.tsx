@@ -3,7 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
 
-/** Меню зависит от роли пользователя (спецификация, раздел 7). */
+/**
+ * Шапка сайта (макет Figma, header 1:2434).
+ * Меню зависит от роли пользователя (спецификация, раздел 7).
+ */
 const LayoutNavbar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -16,74 +19,79 @@ const LayoutNavbar = () => {
   };
 
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar as="header" className="navbar-app" expand="lg" collapseOnSelect>
       <Container>
-        <Navbar.Brand as={Link} to="/">
+        <Navbar.Brand as={Link} to="/" className="navbar-app__logo">
           Библиотеки
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="main-navbar-nav" />
-        <Navbar.Collapse id="main-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">
+        <Navbar.Toggle
+          aria-controls="main-navbar-nav"
+          className="navbar-app__toggler"
+        >
+          <span className="navbar-app__toggler-icon" />
+        </Navbar.Toggle>
+        <Navbar.Collapse id="main-navbar-nav" className="navbar-app__collapse">
+          <Nav className="navbar-app__nav">
+            <Nav.Link as={Link} to="/" className="navbar-app__link">
               Книги
             </Nav.Link>
             {user?.role === 'client' && (
               <>
-                <Nav.Link as={Link} to="/my/rentals">
+                <Nav.Link as={Link} to="/my/rentals" className="navbar-app__link">
                   Мои брони
                 </Nav.Link>
-                <Nav.Link as={Link} to="/support">
+                <Nav.Link as={Link} to="/support" className="navbar-app__link">
                   Поддержка
                 </Nav.Link>
               </>
             )}
             {user?.role === 'manager' && (
               <>
-                <Nav.Link as={Link} to="/manager/users">
+                <Nav.Link as={Link} to="/manager/users" className="navbar-app__link">
                   Пользователи
                 </Nav.Link>
-                <Nav.Link as={Link} to="/manager/rentals">
+                <Nav.Link as={Link} to="/manager/rentals" className="navbar-app__link">
                   Брони
                 </Nav.Link>
-                <Nav.Link as={Link} to="/manager/support">
+                <Nav.Link as={Link} to="/manager/support" className="navbar-app__link">
                   Обращения
                 </Nav.Link>
               </>
             )}
             {user?.role === 'admin' && (
               <>
-                <Nav.Link as={Link} to="/admin/libraries">
+                <Nav.Link as={Link} to="/admin/libraries" className="navbar-app__link">
                   Библиотеки
                 </Nav.Link>
-                <Nav.Link as={Link} to="/admin/books">
+                <Nav.Link as={Link} to="/admin/books" className="navbar-app__link">
                   Книги (упр.)
                 </Nav.Link>
-                <Nav.Link as={Link} to="/admin/users">
+                <Nav.Link as={Link} to="/admin/users" className="navbar-app__link">
                   Пользователи
                 </Nav.Link>
               </>
             )}
           </Nav>
           {user ? (
-            <div className="d-flex align-items-center">
-              <Navbar.Text className="me-3">{user.name}</Navbar.Text>
+            <div className="navbar-app__user">
+              <span className="navbar-app__name">{user.name}</span>
               <Button
-                variant="outline-secondary"
-                size="sm"
+                variant="link"
+                className="navbar-app__button navbar-app__button--ghost"
                 onClick={() => void handleLogout()}
               >
                 Выход
               </Button>
             </div>
           ) : (
-            <Nav>
-              <Nav.Link as={Link} to="/login">
+            <div className="navbar-app__user">
+              <Link to="/login" className="navbar-app__button">
                 Вход
-              </Nav.Link>
-              <Nav.Link as={Link} to="/register">
+              </Link>
+              <Link to="/register" className="navbar-app__link">
                 Регистрация
-              </Nav.Link>
-            </Nav>
+              </Link>
+            </div>
           )}
         </Navbar.Collapse>
       </Container>

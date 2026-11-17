@@ -478,3 +478,201 @@ Backend-файлы, `.env` и существующая функциональн�
 - [ ] Manager видит список и фильтры, но не видит форму создания и других административных действий.
 - [ ] Проверить адаптивность: сузить окно — меню сворачивается в «бургер», таблица прокручивается по горизонтали.
 
+---
+
+# Отчёт: День 3 — Backend «Библиотеки и книги»
+
+Выполнен только backend-часть задания Дня 3 (п. «Backend» раздела 10 спецификации). Frontend-часть (страница поиска, `libraries.api.ts`/`books.api.ts`, срезы) не изменялась — по ограничению задачи.
+
+## 1. Что реализовано
+
+**Сущности** (раздел 4 спецификации):
+
+- `Library` (`libraries`): `id`, `name` (200), `address` (300), `description?`, `createdAt`, `updatedAt`;
+- `Book` (`books`): `id`, `libraryId` (FK → `libraries`, `ON DELETE CASCADE`), `title` (300), `author` (200), `year?`, `description?`, `coverImage?` (путь `/uploads/<uuid>.<ext>`), `isAvailable` (default `true`), `totalCopies` (default 1), `availableCopies` (default 1), `createdAt`, `updatedAt`. Индексы по `title`, `author`, `libraryId`; CHECK-ограничения `totalCopies >= 1` и `0 <= availableCopies <= totalCopies`.
+
+**Публичные маршруты** (без авторизации):
+
+| Метод | Путь | Поведение |
+| --- | --- | --- |
+| GET | `/api/common/libraries` | список библиотек, пагинация `limit`/`offset` |
+| GET | `/api/common/libraries/:id` ⭐ | одна библиотека, 404 если нет |
+| GET | `/api/common/books` | фильтры `library`, `author`, `title`, `availableOnly` + пагинация; в ответе у книги объект `library: {id, name, address}` |
+| GET | `/api/common/books/:id` ⭐ | книга с библиотекой, 404 если нет |
+
+**Админские маршруты** (только роль `admin`, `AuthenticatedGuard` + `RolesGuard`):
+
+- `POST|PUT|DELETE /api/admin/libraries[/:id]` — JSON;
+- `POST|PUT|DELETE /api/admin/books[/:id]` — `multipart/form-data` с необязательным полем `coverImage` (`FileInterceptor`); `PUT` также принимает JSON без файла;
+- `DELETE` возвращает `{ "success": true }`.
+
+**Правила и особенности:**
+
+- Обложки: только `image/jpeg`, `image/png`, `image/webp`, размер ≤ 2 МБ — иначе `400`. Имя файла генерируется (uuid + расширение из mime-типа), клиентское имя не используется. Файлы раздаются вторым `ServeStaticModule` по `/uploads/<файл>` (`index: false` — отсутствующий файл даёт 404).
+- При замене обложки старый файл удаляется с диска; при удалении книги — тоже; при удалении библиотеки — удаляются обложки всех её книг (до каскадного удаления собираются пути).
+- Пересчёт при смене `totalCopies`: выданные = `totalCopies - availableCopies`; новый `availableCopies = clamp(новый totalCopies - выданные, 0, новый totalCopies)`; `isAvailable = availableCopies > 0`.
+- 404 — отсутствующие сущности и нечисловой `:id` (через `ParseIntPipe` → 400 для «abc»); 409 — удаление при активных арендах (заглушка, см. п. 4); 400 — невалидные DTO, несуществующий `libraryId`, неверный тип/размер файла.
+- Фильтр `library`: если значение состоит из цифр — по `libraryId`, иначе — `ILIKE` по названию библиотеки. `title`/`author` — `ILIKE` с экранированием `%`/`_`.
+
+## 2. Созданные и изменённые файлы
+
+Новые (все в `backend/src/libraries/`):
+
+- `entities/library.entity.ts`, `entities/book.entity.ts` — сущности с индексами и CHECK;
+- `dto/library.dto.ts`, `dto/book.dto.ts`, `dto/search-books-query.dto.ts` — DTO (создание/обновление/поиск; строковые значения multipart приводятся к числу через `@Transform`);
+- `libraries.service.ts`, `books.service.ts` — сервисы;
+- `common-libraries.controller.ts`, `common-books.controller.ts` — публичные маршруты;
+- `admin-libraries.controller.ts`, `admin-books.controller.ts` — админский CRUD (книги — multipart);
+- `cover-upload.config.ts` — `validateCoverFile` / `saveCoverFile` / `removeCoverFile`, константы поля и лимитов;
+- `book.mapper.ts` — явный маппер книги в ответ API (связанная библиотека сокращается до `{id, name, address}`);
+- `interfaces/active-rentals-checker.interface.ts` — интерфейс + токен DI `ACTIVE_RENTALS_CHECKER`;
+- `no-active-rentals-checker.ts` — заглушка (всегда `false`);
+- `books.service.spec.ts` — unit-тесты.
+
+Изменённые:
+
+- `backend/src/app.module.ts` — подключён `LibrariesModule` и второй `ServeStaticModule` для `/uploads`; путь к `.env` сделан абсолютным (`join(__dirname, '..', '..', '.env')`) — чинит `npm start` из корня репозитория;
+- `backend/src/config/configuration.ts` — `UPLOADS_DIR` разрешается от корня репозитория, а не от CWD;
+- `backend/src/database/seed-demo.ts` — новый скрипт демо-данных;
+- `backend/package.json` — скрипт `seed:demo` (`nest build && node dist/database/seed-demo.js`);
+- `backend/test/app.e2e-spec.ts` — блок «День 3: библиотеки и книги» (+43 e2e-теста);
+- `backend/test/setup-env.ts` — `UPLOADS_DIR` e2e-тестов указывает во временный каталог (не трогает `backend/uploads`);
+- `docs/DECISIONS.md` — раздел «День 3» (10 решений).
+
+## 3. Проверка активных аренд (заглушка)
+
+Интерфейс `ActiveRentalsChecker` (`hasActiveRentalsForBook`, `hasActiveRentalsForLibrary`) подключён в сервисы через токен DI `ACTIVE_RENTALS_CHECKER`. Реализация на Дне 3 — `NoActiveRentalsChecker` (всегда `false`), поскольку модуль аренды ещё не существует. На Дне 4 токен подключается к `RentalsService` без изменения кода книг и библиотек.
+
+## 4. Демо-данные
+
+```bash
+npm run seed:demo
+```
+
+Создаёт 3 библиотеки и 15 книг (без обложек — фронтенд показывает плейсхолдер). Идемпотентно: библиотеки сверяются по названию, книги — по паре (название, автор, библиотека); повторный запуск пишет «создано 0/0, существовало книг 15».
+
+## 5. Результаты проверок (выполнены в этой сессии)
+
+| Проверка | Команда | Результат |
+| --- | --- | --- |
+| Линтинг backend + frontend | `npm run lint` | без ошибок |
+| Сборка frontend + backend | `npm run build` | успешно |
+| Unit-тесты backend | `npm test` | **44 passed** (2 suites: `books.service.spec`, `users.service.spec`) |
+| Unit-тесты frontend | `npm test` | без тестовых файлов (Vitest, `passWithNoTests`) — как и на Дне 2 |
+| E2E backend | `npm run test:e2e` | **73 passed** (30 Дня 2 + 43 Дня 3) |
+| Демо-данные | `npm run seed:demo` ×2 | 3/15 → 0/0, существовало 15 (идемпотентно) |
+
+Ключевые e2e-сценарии Дня 3: multipart-создание книги с обложкой → файл открывается через `/uploads/...`; 400 на `text/plain` и на файл > 2 МБ; 401/403 на админских маршрутах; фильтры `title`/`author`/`library` (id и название)/`availableOnly` + пагинация; пересчёт `availableCopies` при смене `totalCopies`; замена обложки удаляет старый файл; удаление библиотеки каскадно удаляет книги; 404/400 на несуществующих/нечисловых id.
+
+**Ручная проверка работающего API (curl, сервер на `HTTP_PORT=3100`, т.к. порт 3000 занят Docker-контейнером `library-booking-app-1`):**
+
+- `GET /api/health` → `200 {"status":"ok"}`;
+- `GET /api/common/libraries` → 3 демо-библиотеки;
+- `GET /api/common/books?limit=100` → 15 книг;
+- `GET /api/common/books?title=пр&availableOnly=true` → 3 книги, у каждой заполнен `library {id, name, address}`;
+- `GET /api/common/books?library=Северная` → 5 книг (фильтр по названию);
+- `GET /api/common/books/999999` → 404;
+- `POST /api/admin/libraries` без сессии → 401; с сессией клиента → 403;
+- вход админа → `POST /api/admin/books` с PNG-обложкой → `201`, `coverImage: /uploads/<uuid>.png`; `GET` обложки → `200 image/png`;
+- файл `text/plain` → 400; файл > 2 МБ → 400;
+- `DELETE` тестовой книги → `{"success":true}`, обложка после удаления → 404.
+
+Тестовые записи smoke-проверки (книга, два клиента) удалены из БД; временный сервер остановлен; в dev-БД остались только демо-данные (3 библиотеки, 15 книг).
+
+## 6. Ограничения и вопросы
+
+1. **409 при удалении пока не достижим на практике**: заглушка `NoActiveRentalsChecker` всегда возвращает `false`. Полная проверка заработает на Дне 4 после подключения `RentalsService` (покрыта unit-тестом с моком).
+2. **Размер файла проверяется после приёма в память**: лимит multer не ставился, потому что он даёт 413, а спецификация требует 400. Очень большой файл целиком буферизуется до проверки — приемлемо для учебного проекта.
+3. **`GET /api/admin/libraries` не добавлен**: в контракте (раздел 6.3) такого эндпоинта нет — списком пользуется публичный `/api/common/libraries`.
+4. **Демо-книги без обложек**: реальные изображения не прикладывались, `coverImage = null`.
+5. **Коммит и тег `day-3` не создавались** (ограничение задачи) — после приёмки нужно закоммитить и поставить тег по правилам `AGENTS.md`.
+6. **Frontend-часть Дня 3 не выполнялась** (страница поиска и API-клиенты) — вне объёма этой задачи.
+
+
+---
+
+# Отчёт: День 3 — Frontend «Поиск книг»
+
+Дата: 2026-11-16
+
+## 1. Созданные и изменённые файлы
+
+| Файл | Действие | Содержание |
+| --- | --- | --- |
+| `frontend/src/types/index.ts` | Изменён | `Library` (nullable `description`), новый `BookLibrary {id,name,address}`, `Book` приведён к фактическому ответу `toBookResponse` (без `libraryId`, nullable `year/description/coverImage`, `createdAt/updatedAt`), новый `BookFilters {library, author, title, availableOnly}` |
+| `frontend/src/api/libraries.api.ts` | Создан | `fetchLibraries({limit, offset})` → `GET /api/common/libraries`, `fetchLibrary(id)` |
+| `frontend/src/api/books.api.ts` | Создан | `searchBooks(params)` → `GET /api/common/books` (фильтры + пагинация), `fetchBook(id)` |
+| `frontend/src/features/libraries/librariesSlice.ts` | Создан | Загрузка списка библиотек: `items/loading/error` |
+| `frontend/src/features/books/booksSlice.ts` | Создан | Поиск книг + защита от гонок через `requestId` из `action.meta.requestId` |
+| `frontend/src/app/store.ts` | Изменён | Подключены редьюсеры `libraries` и `books` |
+| `frontend/src/components/books/BookFilters.tsx` | Создан | Селект библиотек, автор, название, checkbox «Только доступные», «Найти»/«Сбросить» |
+| `frontend/src/components/books/BookCard.tsx` | Создан | Обложка с `onError`-плейсхолдером, название, автор, библиотека, доступность, ссылка `/books/:id` |
+| `frontend/src/pages/HomePage.tsx` | Переписан | Публичная страница поиска: фильтры, состояния loading/error/empty, список, пагинация |
+| `frontend/src/styles/pages/HomePage.scss` | Создан | Стили карточки книги (обложка 3:4, плейсхолдер) на токенах из `variables.scss` |
+| `frontend/src/styles/index.scss` | Изменён | Добавлен импорт `./pages/HomePage` |
+
+Backend, `.env`, работающие модули Дней 1–2 не изменялись. Коммит и тег `day-3` не создавались.
+
+## 2. API-запросы и Redux slices
+
+- `librariesApi.fetchLibraries({limit: 100, offset: 0})` → `GET /api/common/libraries` — список для селекта фильтра (один запрос на старте страницы).
+- `booksApi.searchBooks({limit: PAGE_SIZE+1, offset, library, author, title, availableOnly})` → `GET /api/common/books` — публичный поиск.
+- Оба используют существующий Axios-инстанс `api/http.ts` (второго инстанса нет), ошибки — через `getApiErrorMessage()`.
+- **Защита от устаревших ответов**: в `pending` сохраняется `action.meta.requestId`, в `fulfilled`/`rejected` ответ игнорируется, если `requestId` не совпадает с текущим. Быстрые изменения фильтров не могут перезаписать более свежий результат.
+- Пагинация: `limit = PAGE_SIZE + 1` (метод из `AdminUsersPage`), `hasNext = items.length > PAGE_SIZE`, отображается `slice(0, PAGE_SIZE)`; `PAGE_SIZE = 12`.
+
+## 3. Компоненты и страница
+
+- `BookFilters` — поля: выбор библиотеки (из API), автор, название, «Только доступные»; отправка по кнопке «Найти», «Сбросить» очищает поля и сбрасывает поиск; при применении страница всегда возвращается на offset 0.
+- `BookCard` — название (ссылка на `/books/:id`), автор, библиотека (`library.name` или «Библиотека не указана»), бейдж доступности и `availableCopies/totalCopies`, обложка по относительному пути `coverImage` (например `/uploads/<uuid>.png`) как есть; при `coverImage = null` или ошибке загрузки (`onError`) — плейсхолдер «Нет обложки».
+- `HomePage` — карточка «Фильтры» (select библиотек с собственным loading/error и кнопкой «Повторить»), затем: `loading` → лоадер; `error` → `ErrorAlert` + «Повторить»; пустой результат → «По вашему запросу ничего не найдено» + «Сбросить фильтры»; иначе сетка карточек + `Pagination`.
+- Страница публичная: маршруты `/` открыты и гостям, и авторизованным пользователям (ограничений в `router.tsx` нет).
+
+## 4. Результаты проверок
+
+| Проверка | Результат |
+| --- | --- |
+| `npm run lint` (корень) | ✅ оба workspace, exit 0 |
+| `npm run build` (корень) | ✅ frontend (`tsc -b && vite build`) и backend (`nest build`) собраны (предупреждения Sass об `@import` — существовали и раньше) |
+| `npm test` (корень) | ✅ backend: 2 сюита, 44 теста; frontend: vitest — тестов нет, exit 0 |
+| `npm run test:e2e` | ✅ 1 сюит, 73 теста (включая фильтры и пагинацию `GET /api/common/books`) |
+
+**Рантайм-сверка контракта API с типами (curl, локальный запуск собранного backend + PostgreSQL):**
+
+- `GET /api/common/libraries?limit=100&offset=0` → массив `{id, name, address, description, createdAt, updatedAt}` — соответствует типу `Library`;
+- `GET /api/common/books?limit=13&offset=0&availableOnly=true` → `{id, title, author, year, description, coverImage: null, isAvailable, totalCopies, availableCopies, createdAt, updatedAt, library: {id, name, address}}` — соответствует типу `Book`;
+- фильтры: `library=1` → 5 книг одной библиотеки; `author=Толстой` → 1 книга; `title=война&availableOnly=true` → «Война и мир»; несуществующее название → `[]` (пустой результат);
+- 15 книг при `PAGE_SIZE = 12` → первая страница 12 + признак следующей, вторая — 3;
+- **обложки**: создана временная книга с PNG через `POST /api/admin/books` → `coverImage: "/uploads/<uuid>.png"`; `GET /uploads/<uuid>.png` → `200 image/png` (не перехвачено SPA); временная книга удалена → книга и файл обложки → 404. Демо-данные восстановлены (3 библиотеки, 15 книг).
+
+## 5. Критерии: что проверено автоматически
+
+✅ Загрузка библиотек и книг из API (типы сверены с реальными ответами, фильтры проверены curl'ом).
+✅ Фильтры по библиотеке, автору, названию и «Только доступные», включая комбинации.
+✅ Сброс фильтров возвращает полный список (offset → 0, фильтры пустые).
+✅ Пагинация (limit+1/hasNext, страница 1 → 12 книг, страница 2 → 3).
+✅ Пустое состояние при нулевых результатах (проверено на API; рендер — код, типизирован).
+✅ Ошибка API → сообщение + «Повторить» (для поиска и для списка библиотек).
+✅ Обложки через относительный `/uploads/...`, плейсхолдер при отсутствии/ошибке.
+✅ Lint / build / unit / e2e — зелёные.
+
+## 6. Что проверить вручную в браузере
+
+Ручную браузерную проверку **я не выполнял** (в среде нет браузера/автоматизации). Проверьте:
+
+1. Главная страница открывается у гостя и у авторизованного пользователя, список книг отображается.
+2. Каждый фильтр и их комбинации визуально обновляют список, страница возвращается на 1-ю.
+3. «Только доступные» исключает книги без свободных экземпляров.
+4. «Сбросить» возвращает полный список; пустой запрос показывает пустое состояние.
+5. Пагинация «Назад/Вперёд» листает без потери фильтров.
+6. У демо-книг (`coverImage = null`) виден плейсхолдер; у книги с обложкой — изображение (загрузите обложку через админку).
+7. Ошибка API (например, остановленный backend) → сообщение и кнопка «Повторить».
+8. Клик по карточке ведёт на `/books/:id` (сама страница книги — следующий шаг).
+
+## 7. Известные ограничения
+
+1. **Figma-макеты недоступны** (файл `2Z5CVDKhAHi4AfAm3vHHjn` — нет прав редактора, `create_session`/`get_screenshot` отклонены). По спецификации (раздел 7) сделан простой интерфейс на Bootstrap 5 с существующими токенами из `variables.scss`.
+2. **Демо-книги без обложек** (`coverImage = null`) — везде плейсхолдер; реальные изображения нужно загрузить через админку.
+3. **Фильтр библиотек** загружается одним запросом `limit=100` — при большем числе библиотек потребуется пагинация селекта.
+4. **`BookPage` не реализована** — вне объёма Дня 3 (ссылка с карточки ведёт на маршрут, который будет доработан).
+5. Коммит и тег `day-3` не создавались (ограничение задачи).

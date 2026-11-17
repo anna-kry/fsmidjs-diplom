@@ -1,4 +1,21 @@
+import { isAbsolute, resolve } from 'path';
 import { registerAs } from '@nestjs/config';
+
+// Корень репозитория: этот файл лежит на трёх уровнях ниже него
+// и в исходниках (src/config), и в сборке (dist/config).
+const REPO_ROOT = resolve(__dirname, '..', '..', '..');
+
+/**
+ * Относительный UPLOADS_DIR отсчитывается от корня репозитория,
+ * а не от текущей рабочей директории — иначе `nest start` из каталога
+ * backend создал бы второй вложенный каталог backend/backend/uploads.
+ */
+function resolveUploadsDir(value: string | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  return isAbsolute(value) ? value : resolve(REPO_ROOT, value);
+}
 
 export default registerAs('app', () => ({
   http: {
@@ -20,7 +37,7 @@ export default registerAs('app', () => ({
     synchronize: process.env.DB_SYNCHRONIZE === 'true',
   },
   uploads: {
-    dir: process.env.UPLOADS_DIR,
+    dir: resolveUploadsDir(process.env.UPLOADS_DIR),
   },
   seed: {
     admin: {

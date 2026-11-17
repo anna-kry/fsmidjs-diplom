@@ -3,9 +3,14 @@
 
 @import './variables';
 @import './global';
+@import './components/Layout';
+@import './components/Navbar';
+@import './components/Footer';
+@import './components/BookCard';
 @import './pages/LoginPage';
 @import './pages/RegisterPage';
 @import './pages/NotFoundPage';
+@import './pages/HomePage';
 
 body {
   margin: 0;

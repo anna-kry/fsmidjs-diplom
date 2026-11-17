@@ -10,10 +10,16 @@
  * для тестовой базы (SeedService создаст из них admin и manager).
  */
 
+import { tmpdir } from 'os';
+import { join } from 'path';
+
 export const TEST_DATABASE = 'library_booking_e2e';
 
 process.env.POSTGRES_DB = TEST_DATABASE;
 process.env.DB_SYNCHRONIZE = 'true';
+// Обложки e2e-тестов сохраняются в отдельный временный каталог,
+// чтобы не трогать реальные файлы в backend/uploads.
+process.env.UPLOADS_DIR = join(tmpdir(), 'library-booking-e2e-uploads');
 // Тесты ходят по HTTP, поэтому secure-cookie всегда отключён.
 process.env.COOKIE_SECURE = 'false';
 process.env.SESSION_SECRET = process.env.SESSION_SECRET || 'e2e-test-secret';

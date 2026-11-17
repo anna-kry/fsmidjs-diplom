@@ -20,12 +20,25 @@ $color-button-secondary: #2d5a4a;
 $color-button-secondary-hover: #3a6e58;
 $color-button-secondary-text: #ffffff;
 
+// Акцентный зелёный (кнопка «Вход» в шапке, круги соцсетей в футере)
+$color-accent: #6aa378;
+
+// Фон карточки книги (card-bg в макете Figma)
+$color-card-bg: #fffef0;
+
+// Фон футера
+$color-bg-footer: #f0fff1;
+
 // Шрифт
 $font-family: 'Montserrat', sans-serif;
 
 // Радиусы
 $radius-popup: 32px;
 $radius-input: 16px;
+$radius-card: 32px;
+
+// Тень по макету Figma (4px 4px 0 чёрный)
+$shadow-card: 4px 4px 0px $color-border;
 
 // Z-index
 $zindex-backdrop: 1060;
