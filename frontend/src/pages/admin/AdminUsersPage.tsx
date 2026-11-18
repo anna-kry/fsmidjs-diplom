@@ -54,21 +54,21 @@ const AdminUsersPage = () => {
 
   return (
     <>
-      <h1 className="mb-4">Пользователи</h1>
-      <div className="row">
-        <div className="col-12 col-xl-10 col-xxl-8">
-          <Card className="mb-4">
+      <h1 className="admin-users__heading">Пользователи</h1>
+      <div className="admin-users__row">
+        <div className="admin-users__main-column">
+          <Card className="admin-users__card">
             <Card.Body>
-              <Card.Title as="h2" className="h5">
+              <Card.Title as="h2" className="admin-users__section-title">
                 Новый пользователь
               </Card.Title>
               <CreateUserForm onCreated={load} />
             </Card.Body>
           </Card>
 
-          <Card className="mb-4">
+          <Card className="admin-users__card">
             <Card.Body>
-              <Card.Title as="h2" className="h5">
+              <Card.Title as="h2" className="admin-users__section-title">
                 Фильтры
               </Card.Title>
               <UsersFilters

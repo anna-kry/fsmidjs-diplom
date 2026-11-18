@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import type { BookFilters as BookFiltersValue, Library } from '../../types';
 
 interface BookFiltersProps {
@@ -10,8 +10,13 @@ interface BookFiltersProps {
 }
 
 /**
- * Фильтры поиска: библиотека, автор, название, «Только доступные».
- * Поля отправляются по нажатию «Найти»; сброс очищает все поля.
+ * Блок поиска книг по макету Figma (frame 1:1616 «search form»):
+ * подписи над полями ввода (16px, отступ 8px), поля высотой 51px,
+ * между группами полей 40px, кнопки по центру карточки.
+ *
+ * Сетка реализована собственным классом `book-filters__row`, без Row/Col
+ * из Bootstrap: те задают width/padding и отрицательные поля, которые
+ * конфликтуют с CSS Grid (у грид-элемента containing block — его grid-area).
  */
 const BookFilters = ({ libraries, onApply, onReset }: BookFiltersProps) => {
   const [library, setLibrary] = useState('');
@@ -38,12 +43,15 @@ const BookFilters = ({ libraries, onApply, onReset }: BookFiltersProps) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Row className="g-3">
-        <Col xs={12} md={6} xl={3}>
-          <Form.Label htmlFor="filter-library">Библиотека</Form.Label>
+    <Form onSubmit={handleSubmit} className="book-filters__form">
+      <div className="book-filters__row">
+        <div className="book-filters__field">
+          <Form.Label htmlFor="filter-library" className="book-filters__label">
+            Библиотека
+          </Form.Label>
           <Form.Select
             id="filter-library"
+            className="book-filters__select"
             value={library}
             onChange={(event) => setLibrary(event.target.value)}
           >
@@ -54,42 +62,58 @@ const BookFilters = ({ libraries, onApply, onReset }: BookFiltersProps) => {
               </option>
             ))}
           </Form.Select>
-        </Col>
-        <Col xs={12} md={6} xl={3}>
-          <Form.Label htmlFor="filter-author">Автор</Form.Label>
+        </div>
+
+        <div className="book-filters__field">
+          <Form.Label htmlFor="filter-author" className="book-filters__label">
+            Автор
+          </Form.Label>
           <Form.Control
             id="filter-author"
+            className="book-filters__input"
             type="search"
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
             placeholder="Часть имени автора"
           />
-        </Col>
-        <Col xs={12} md={6} xl={3}>
-          <Form.Label htmlFor="filter-title">Название</Form.Label>
+        </div>
+
+        <div className="book-filters__field">
+          <Form.Label htmlFor="filter-title" className="book-filters__label">
+            Название
+          </Form.Label>
           <Form.Control
             id="filter-title"
+            className="book-filters__input"
             type="search"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Часть названия"
           />
-        </Col>
-        <Col xs={12} md={6} xl={3} className="d-flex align-items-end">
+        </div>
+
+        <div className="book-filters__field book-filters__field--checkbox">
           <Form.Check
             id="filter-available"
             type="checkbox"
+            className="book-filters__checkbox"
             label="Только доступные"
             checked={availableOnly}
             onChange={(event) => setAvailableOnly(event.target.checked)}
           />
-        </Col>
-      </Row>
-      <div className="d-flex gap-2 mt-3">
-        <Button type="submit" variant="primary">
+        </div>
+      </div>
+
+      <div className="book-filters__actions">
+        <Button type="submit" variant="primary" className="book-filters__button">
           Найти
         </Button>
-        <Button type="button" variant="outline-secondary" onClick={handleReset}>
+        <Button
+          type="button"
+          variant="outline-secondary"
+          className="book-filters__button book-filters__button--secondary"
+          onClick={handleReset}
+        >
           Сбросить
         </Button>
       </div>

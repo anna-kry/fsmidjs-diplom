@@ -1,0 +1,78 @@
+@import '../variables';
+
+// Слайдер книг (компонент BookSwiper, библиотека Swiper).
+// Стили карточки внутри слайдера ориентированы на блок «Новые поступления» из макета Figma (node 1:824).
+
+.book-swiper {
+  margin-bottom: 32px;
+
+  &__title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 16px;
+  }
+
+  &__slider {
+    // Размер стрелок задаётся CSS-переменной Swiper.
+    --swiper-navigation-size: 40px;
+
+    // Стрелки в стиле макета «Новые поступления»:
+    // жёлтый фон (#ffc33e), чёрная обводка, тень 2px 2px 0px, скругление 20px, иконка 24px.
+    .swiper-button-prev,
+    .swiper-button-next {
+      width: 40px;
+      height: 40px;
+      background: $color-button-primary;
+      border: 1px solid $color-border;
+      border-radius: 20px;
+      box-shadow: 2px 2px 0px $color-border;
+      transition: transform 0.15s ease;
+
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      &:hover {
+        transform: translate(-2px, -2px);
+      }
+
+      &:active {
+        transform: translate(0, 0);
+      }
+    }
+
+    // Точки пагинации — под слайдами, без наложения на карточки.
+    > .swiper-pagination {
+      position: static;
+      transform: none;
+      margin-top: 12px;
+    }
+
+    .swiper-pagination-bullet {
+      width: 10px;
+      height: 10px;
+      background: $color-placeholder;
+      opacity: 1;
+
+      &-active {
+        background: $color-accent;
+      }
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .book-swiper {
+    &__title {
+      font-size: 20px;
+    }
+
+    &__slider {
+      --swiper-navigation-size: 32px;
+    }
+  }
+}

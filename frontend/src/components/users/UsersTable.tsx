@@ -4,15 +4,15 @@ import type { UserListItem } from '../../types';
 const UsersTable = ({ items }: { items: UserListItem[] }) => {
   if (items.length === 0) {
     return (
-      <p className="text-body-secondary text-center py-4">
+      <p className="users-table__empty-message">
         Пользователи не найдены. Измените фильтры поиска.
       </p>
     );
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-striped align-middle">
+    <div className="users-table__wrapper">
+      <table className="users-table">
         <thead>
           <tr>
             <th scope="col">ID</th>

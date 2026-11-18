@@ -10,7 +10,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="layout">
       <Navbar />
-      <main className="layout__main container py-4">
+      <main className="layout__content">
         {children}
       </main>
       <Footer />

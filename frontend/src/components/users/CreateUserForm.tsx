@@ -97,9 +97,9 @@ const CreateUserForm = ({ onCreated }: CreateUserFormProps) => {
   return (
     <Form onSubmit={handleSubmit} noValidate>
       {createError && <ErrorAlert message={createError} />}
-      <Row className="g-3">
+      <Row className="create-user__row">
         <Col xs={12} md={4}>
-          <Form.Group controlId="create-email" className="mb-0">
+          <Form.Group controlId="create-email" className="create-user__form-group">
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
@@ -114,7 +114,7 @@ const CreateUserForm = ({ onCreated }: CreateUserFormProps) => {
           </Form.Group>
         </Col>
         <Col xs={12} md={4}>
-          <Form.Group controlId="create-password" className="mb-0">
+          <Form.Group controlId="create-password" className="create-user__form-group">
             <Form.Label>Пароль</Form.Label>
             <Form.Control
               type="password"
@@ -131,7 +131,7 @@ const CreateUserForm = ({ onCreated }: CreateUserFormProps) => {
           </Form.Group>
         </Col>
         <Col xs={12} md={4}>
-          <Form.Group controlId="create-name" className="mb-0">
+          <Form.Group controlId="create-name" className="create-user__form-group">
             <Form.Label>Имя</Form.Label>
             <Form.Control
               type="text"
@@ -146,7 +146,7 @@ const CreateUserForm = ({ onCreated }: CreateUserFormProps) => {
           </Form.Group>
         </Col>
         <Col xs={12} md={4}>
-          <Form.Group controlId="create-phone" className="mb-0">
+          <Form.Group controlId="create-phone" className="create-user__form-group">
             <Form.Label>Контактный телефон</Form.Label>
             <Form.Control
               type="tel"
@@ -162,7 +162,7 @@ const CreateUserForm = ({ onCreated }: CreateUserFormProps) => {
           </Form.Group>
         </Col>
         <Col xs={12} md={4}>
-          <Form.Group controlId="create-role" className="mb-0">
+          <Form.Group controlId="create-role" className="create-user__form-group">
             <Form.Label>Роль</Form.Label>
             <Form.Select
               value={role}
@@ -174,12 +174,12 @@ const CreateUserForm = ({ onCreated }: CreateUserFormProps) => {
             </Form.Select>
           </Form.Group>
         </Col>
-        <Col xs={12} md={4} className="d-flex align-items-end">
+        <Col xs={12} md={4} className="create-user__button-column">
           <Button
             type="submit"
             variant="primary"
             disabled={createLoading}
-            className="w-100"
+            className="create-user__submit-button"
           >
             {createLoading ? 'Создание…' : 'Создать пользователя'}
           </Button>

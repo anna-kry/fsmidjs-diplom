@@ -1,0 +1,43 @@
+@import '../variables';
+
+// Страница пользователей (роль manager): фильтры и таблица.
+
+.manager-users {
+  &__heading {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 1.5rem; // mb-4
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__main-column {
+    width: 100%; // col-12
+    @media (min-width: 1200px) {
+      width: 83.333333%; // col-xl-10
+    }
+    @media (min-width: 1400px) {
+      width: 66.666667%; // col-xxl-8
+    }
+  }
+
+  &__card {
+    margin-bottom: 1.5rem; // mb-4
+  }
+
+  &__section-title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 1.25rem; // h5
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0;
+  }
+}

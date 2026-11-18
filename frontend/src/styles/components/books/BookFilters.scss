@@ -1,0 +1,134 @@
+@import '../../variables';
+
+// Блок поиска книг (макет Figma, frame 1:1616 «search form»).
+// Геометрия по макету: карточка 732px с отступом 32px, поля 668px,
+// подпись 16px/1.2 (высота 19px), зазор подпись→поле 8px, поле 51px,
+// между группами полей 40px, между полями в ряду 48px, кнопка 51px по центру.
+
+.book-filters {
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; // одинаковый вертикальный ритм: группы полей и кнопки
+  }
+
+  // Сетка полей. Row/Col из Bootstrap не используются: их width/padding
+  // и отрицательные поля конфликтуют с CSS Grid (см. BookFilters.tsx).
+  &__row {
+    display: grid;
+    gap: 40px 48px; // между строками и между полями в ряду
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, 1fr); // 2 колонки
+    }
+
+    @media (min-width: 1200px) {
+      grid-template-columns: repeat(4, 1fr); // 4 колонки
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__label {
+    font-family: $font-family;
+    font-weight: 600; // подписи SemiBold — как в макете
+    font-size: 16px;
+    line-height: 1.2; // высота подписи 19px — как в макете
+    color: $color-text;
+    margin: 0 0 8px; // зазор подпись → поле по макету
+  }
+
+  &__input,
+  &__select {
+    font-family: $font-family;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.2;
+    color: $color-text;
+    background: $color-input-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-input;
+    height: 51px; // высота поля по макету
+    padding: 0 24px;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $color-border;
+      box-shadow: none;
+    }
+
+    &::placeholder {
+      color: $color-placeholder;
+    }
+  }
+
+  &__checkbox {
+    margin: 0;
+  }
+
+  // Чекбокс выравнивается по низу строки — как и поля ввода рядом.
+  &__field--checkbox {
+    justify-content: flex-end;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center; // кнопка по центру карточки, как в макете
+  }
+
+  &__button {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.2;
+    color: $color-button-primary-text;
+    background: $color-button-primary;
+    border: 1px solid $color-border;
+    border-radius: $radius-input;
+    height: 51px; // высота кнопки по макету
+    box-shadow: $shadow-card;
+    padding: 0 24px;
+    width: 100%;
+    max-width: 296px; // ширина кнопки по макету
+    cursor: pointer;
+    transition: box-shadow 0.15s ease;
+
+    // Hover-вариант кнопки в макете (node 1:7016): фон не меняется,
+    // жёсткая тень исчезает.
+    &:hover:not(:disabled) {
+      box-shadow: none;
+      text-decoration: none;
+    }
+
+    &:active:not(:disabled) {
+      box-shadow: none;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: $shadow-card, 0 0 0 3px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  &__button--secondary {
+    color: $color-button-secondary-text;
+    background: $color-button-secondary;
+
+    &:hover:not(:disabled) {
+      background: $color-button-secondary-hover;
+    }
+  }
+}

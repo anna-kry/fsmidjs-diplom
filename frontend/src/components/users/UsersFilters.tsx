@@ -31,7 +31,7 @@ const UsersFilters = ({ onApply, onReset }: UsersFiltersProps) => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Row className="g-3">
+      <Row className="users-filters__row">
         <Col xs={12} md={4}>
           <Form.Label htmlFor="filter-email">Email</Form.Label>
           <Form.Control
@@ -63,7 +63,7 @@ const UsersFilters = ({ onApply, onReset }: UsersFiltersProps) => {
           />
         </Col>
       </Row>
-      <div className="d-flex gap-2 mt-3">
+      <div className="users-filters__actions">
         <Button type="submit" variant="primary">
           Найти
         </Button>

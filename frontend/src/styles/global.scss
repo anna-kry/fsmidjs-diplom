@@ -1,5 +1,9 @@
 @import './variables';
 
+main {
+  max-width: 1300px;
+  margin: 0 auto;
+}
 // Auth popups (общие для LoginPage и RegisterPage, кнопка используется и в NotFoundPage)
 
 .auth {
@@ -95,10 +99,6 @@
     user-select: none;
   }
 
-  &__button {
-    /* Пустой класс для обратной совместимости в разметке */
-  }
-
   &__footer {
     margin-top: 24px;
     text-align: center;
@@ -133,45 +133,60 @@
       outline: none;
     }
   }
+
+  &__form-group {
+    margin-bottom: 1rem; // mb-3
+  }
+
+  &__form-group--password {
+    margin-bottom: 1.5rem; // mb-4
+  }
+
+  &__form-group--phone {
+    margin-bottom: 1.5rem; // mb-4
+  }
 }
 
 // Основная кнопка — базовые стили, цвета через модификаторы
-.button__main {
-  font-family: $font-family;
-  font-weight: 600;
-  font-size: 16px;
-  border: 1px solid $color-border;
-  border-radius: $radius-input;
-  padding: 16px 24px;
-  width: 100%;
-  cursor: pointer;
-  box-shadow: $color-button-shadow;
-  display: block;
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.button {
+  &__main {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 16px;
+    border: 1px solid $color-border;
+    border-radius: $radius-input;
+    padding: 16px 24px;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: $color-button-shadow;
+    display: block;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &:focus {
+      outline: none;
+    }
   }
 
-  &:focus {
-    outline: none;
+  &__main--primary {
+    color: $color-button-primary-text;
+    background: $color-button-primary;
+
+    &:hover:not(:disabled) {
+      background: $color-button-primary-hover;
+    }
   }
-}
 
-.button__main--primary {
-  color: $color-button-primary-text;
-  background: $color-button-primary;
+  &__main--secondary {
+    color: $color-button-secondary-text;
+    background: $color-button-secondary;
 
-  &:hover:not(:disabled) {
-    background: $color-button-primary-hover;
-  }
-}
-
-.button__main--secondary {
-  color: $color-button-secondary-text;
-  background: $color-button-secondary;
-
-  &:hover:not(:disabled) {
-    background: $color-button-secondary-hover;
+    &:hover:not(:disabled) {
+      background: $color-button-secondary-hover;
+    }
   }
 }

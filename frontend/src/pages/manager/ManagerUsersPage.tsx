@@ -60,12 +60,12 @@ const ManagerUsersPage = () => {
 
   return (
     <>
-      <h1 className="mb-4">Пользователи</h1>
-      <div className="row">
-        <div className="col-12 col-xl-10 col-xxl-8">
-          <Card className="mb-4">
+      <h1 className="manager-users__heading">Пользователи</h1>
+      <div className="manager-users__row">
+        <div className="manager-users__main-column">
+          <Card className="manager-users__card">
             <Card.Body>
-              <Card.Title as="h2" className="h5">
+              <Card.Title as="h2" className="manager-users__section-title">
                 Фильтры
               </Card.Title>
               <UsersFilters

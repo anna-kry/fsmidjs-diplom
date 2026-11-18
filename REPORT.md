@@ -378,37 +378,37 @@ Backend Дня 2 был реализован и проверен ранее; в 
 
 ### Созданы / наполнены (ранее были пустыми заглушками)
 
-| Файл                                     | Описание                                                                                       |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `frontend/src/api/error.ts`              | `getApiErrorMessage()`: извлекает русское сообщение из ответа Nest, заменяет `Unauthorized`/`Forbidden` |
-| `frontend/src/api/auth.api.ts`           | Вызовы `login`, `register`, `logout`, `me`                                                     |
-| `frontend/src/api/users.api.ts`          | Вызовы `fetchAdminUsers`, `fetchManagerUsers`, `createAdminUser` + `UserListParams`            |
-| `frontend/src/features/auth/authSlice.ts`| Срез авторизации (thunks `login/register/logout/fetchMe`, `clearError`, `sessionExpired`)      |
-| `frontend/src/features/users/usersSlice.ts` | Срез списков пользователей (thunks `fetchUsers`, `createAdminUser`)                         |
-| `frontend/src/components/common/Loader.tsx`     | Индикатор загрузки                                                                     |
-| `frontend/src/components/common/ErrorAlert.tsx` | `Alert` для ошибок API                                                                 |
-| `frontend/src/components/common/Pagination.tsx` | Пагинация «Назад/Вперёд»                                                               |
-| `frontend/src/components/guards/GuestRoute.tsx`     | Доступ только для гостя                                                           |
-| `frontend/src/components/guards/ProtectedRoute.tsx` | Доступ только для авторизованных                                                 |
-| `frontend/src/components/guards/RoleRoute.tsx`      | Доступ с проверкой роли                                                         |
-| `frontend/src/components/users/UsersFilters.tsx`    | Форма фильтров email/имя/телефон                                              |
-| `frontend/src/components/users/UsersTable.tsx`      | Таблица пользователей + пустое состояние                                     |
-| `frontend/src/components/users/CreateUserForm.tsx`  | Форма создания пользователя (admin)                                          |
+| Файл                                                | Описание                                                                                                |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `frontend/src/api/error.ts`                         | `getApiErrorMessage()`: извлекает русское сообщение из ответа Nest, заменяет `Unauthorized`/`Forbidden` |
+| `frontend/src/api/auth.api.ts`                      | Вызовы `login`, `register`, `logout`, `me`                                                              |
+| `frontend/src/api/users.api.ts`                     | Вызовы `fetchAdminUsers`, `fetchManagerUsers`, `createAdminUser` + `UserListParams`                     |
+| `frontend/src/features/auth/authSlice.ts`           | Срез авторизации (thunks `login/register/logout/fetchMe`, `clearError`, `sessionExpired`)               |
+| `frontend/src/features/users/usersSlice.ts`         | Срез списков пользователей (thunks `fetchUsers`, `createAdminUser`)                                     |
+| `frontend/src/components/common/Loader.tsx`         | Индикатор загрузки                                                                                      |
+| `frontend/src/components/common/ErrorAlert.tsx`     | `Alert` для ошибок API                                                                                  |
+| `frontend/src/components/common/Pagination.tsx`     | Пагинация «Назад/Вперёд»                                                                                |
+| `frontend/src/components/guards/GuestRoute.tsx`     | Доступ только для гостя                                                                                 |
+| `frontend/src/components/guards/ProtectedRoute.tsx` | Доступ только для авторизованных                                                                        |
+| `frontend/src/components/guards/RoleRoute.tsx`      | Доступ с проверкой роли                                                                                 |
+| `frontend/src/components/users/UsersFilters.tsx`    | Форма фильтров email/имя/телефон                                                                        |
+| `frontend/src/components/users/UsersTable.tsx`      | Таблица пользователей + пустое состояние                                                                |
+| `frontend/src/components/users/CreateUserForm.tsx`  | Форма создания пользователя (admin)                                                                     |
 
 ### Изменены
 
-| Файл                                   | Изменение                                                                                                   |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `frontend/src/types/index.ts`          | Добавлены `UserListItem`, `UserFilters`, `CreateUserInput`; `User.contactPhone` теперь `string \| null` (сервер возвращает `null`) |
-| `frontend/src/app/store.ts`            | Подключены редьюсеры `auth` и `users`                                                                        |
-| `frontend/src/App.tsx`                 | Диспатч `fetchMe` на старте, полноэкранный loader до `initialized`                                           |
-| `frontend/src/app/router.tsx`          | Маршруты обёрнуты в `GuestRoute`/`RoleRoute`, все прежние пути сохранены                                     |
-| `frontend/src/components/layout/Navbar.tsx` | Меню по роли, имя пользователя, кнопка «Выход»                                                          |
-| `frontend/src/pages/LoginPage.tsx`     | Полная форма входа вместо заглушки                                                                            |
-| `frontend/src/pages/RegisterPage.tsx`  | Полная форма регистрации вместо заглушки                                                                     |
-| `frontend/src/pages/admin/AdminUsersPage.tsx`   | Список + фильтры + пагинация + форма создания                                                    |
-| `frontend/src/pages/manager/ManagerUsersPage.tsx` | Список + фильтры + пагинация (без действий управления)                                            |
-| `frontend/src/pages/NotFoundPage.tsx`  | Ссылка «На главную»                                                                                          |
+| Файл                                              | Изменение                                                                                                                          |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `frontend/src/types/index.ts`                     | Добавлены `UserListItem`, `UserFilters`, `CreateUserInput`; `User.contactPhone` теперь `string \| null` (сервер возвращает `null`) |
+| `frontend/src/app/store.ts`                       | Подключены редьюсеры `auth` и `users`                                                                                              |
+| `frontend/src/App.tsx`                            | Диспатч `fetchMe` на старте, полноэкранный loader до `initialized`                                                                 |
+| `frontend/src/app/router.tsx`                     | Маршруты обёрнуты в `GuestRoute`/`RoleRoute`, все прежние пути сохранены                                                           |
+| `frontend/src/components/layout/Navbar.tsx`       | Меню по роли, имя пользователя, кнопка «Выход»                                                                                     |
+| `frontend/src/pages/LoginPage.tsx`                | Полная форма входа вместо заглушки                                                                                                 |
+| `frontend/src/pages/RegisterPage.tsx`             | Полная форма регистрации вместо заглушки                                                                                           |
+| `frontend/src/pages/admin/AdminUsersPage.tsx`     | Список + фильтры + пагинация + форма создания                                                                                      |
+| `frontend/src/pages/manager/ManagerUsersPage.tsx` | Список + фильтры + пагинация (без действий управления)                                                                             |
+| `frontend/src/pages/NotFoundPage.tsx`             | Ссылка «На главную»                                                                                                                |
 
 Backend-файлы, `.env` и существующая функциональность не изменялись.
 
@@ -493,12 +493,12 @@ Backend-файлы, `.env` и существующая функциональн�
 
 **Публичные маршруты** (без авторизации):
 
-| Метод | Путь | Поведение |
-| --- | --- | --- |
-| GET | `/api/common/libraries` | список библиотек, пагинация `limit`/`offset` |
-| GET | `/api/common/libraries/:id` ⭐ | одна библиотека, 404 если нет |
-| GET | `/api/common/books` | фильтры `library`, `author`, `title`, `availableOnly` + пагинация; в ответе у книги объект `library: {id, name, address}` |
-| GET | `/api/common/books/:id` ⭐ | книга с библиотекой, 404 если нет |
+| Метод | Путь                           | Поведение                                                                                                                 |
+| ----- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| GET   | `/api/common/libraries`        | список библиотек, пагинация `limit`/`offset`                                                                              |
+| GET   | `/api/common/libraries/:id` ⭐ | одна библиотека, 404 если нет                                                                                             |
+| GET   | `/api/common/books`            | фильтры `library`, `author`, `title`, `availableOnly` + пагинация; в ответе у книги объект `library: {id, name, address}` |
+| GET   | `/api/common/books/:id` ⭐     | книга с библиотекой, 404 если нет                                                                                         |
 
 **Админские маршруты** (только роль `admin`, `AuthenticatedGuard` + `RolesGuard`):
 
@@ -553,14 +553,14 @@ npm run seed:demo
 
 ## 5. Результаты проверок (выполнены в этой сессии)
 
-| Проверка | Команда | Результат |
-| --- | --- | --- |
-| Линтинг backend + frontend | `npm run lint` | без ошибок |
-| Сборка frontend + backend | `npm run build` | успешно |
-| Unit-тесты backend | `npm test` | **44 passed** (2 suites: `books.service.spec`, `users.service.spec`) |
-| Unit-тесты frontend | `npm test` | без тестовых файлов (Vitest, `passWithNoTests`) — как и на Дне 2 |
-| E2E backend | `npm run test:e2e` | **73 passed** (30 Дня 2 + 43 Дня 3) |
-| Демо-данные | `npm run seed:demo` ×2 | 3/15 → 0/0, существовало 15 (идемпотентно) |
+| Проверка                   | Команда                | Результат                                                            |
+| -------------------------- | ---------------------- | -------------------------------------------------------------------- |
+| Линтинг backend + frontend | `npm run lint`         | без ошибок                                                           |
+| Сборка frontend + backend  | `npm run build`        | успешно                                                              |
+| Unit-тесты backend         | `npm test`             | **44 passed** (2 suites: `books.service.spec`, `users.service.spec`) |
+| Unit-тесты frontend        | `npm test`             | без тестовых файлов (Vitest, `passWithNoTests`) — как и на Дне 2     |
+| E2E backend                | `npm run test:e2e`     | **73 passed** (30 Дня 2 + 43 Дня 3)                                  |
+| Демо-данные                | `npm run seed:demo` ×2 | 3/15 → 0/0, существовало 15 (идемпотентно)                           |
 
 Ключевые e2e-сценарии Дня 3: multipart-создание книги с обложкой → файл открывается через `/uploads/...`; 400 на `text/plain` и на файл > 2 МБ; 401/403 на админских маршрутах; фильтры `title`/`author`/`library` (id и название)/`availableOnly` + пагинация; пересчёт `availableCopies` при смене `totalCopies`; замена обложки удаляет старый файл; удаление библиотеки каскадно удаляет книги; 404/400 на несуществующих/нечисловых id.
 
@@ -588,7 +588,6 @@ npm run seed:demo
 5. **Коммит и тег `day-3` не создавались** (ограничение задачи) — после приёмки нужно закоммитить и поставить тег по правилам `AGENTS.md`.
 6. **Frontend-часть Дня 3 не выполнялась** (страница поиска и API-клиенты) — вне объёма этой задачи.
 
-
 ---
 
 # Отчёт: День 3 — Frontend «Поиск книг»
@@ -597,19 +596,19 @@ npm run seed:demo
 
 ## 1. Созданные и изменённые файлы
 
-| Файл | Действие | Содержание |
-| --- | --- | --- |
-| `frontend/src/types/index.ts` | Изменён | `Library` (nullable `description`), новый `BookLibrary {id,name,address}`, `Book` приведён к фактическому ответу `toBookResponse` (без `libraryId`, nullable `year/description/coverImage`, `createdAt/updatedAt`), новый `BookFilters {library, author, title, availableOnly}` |
-| `frontend/src/api/libraries.api.ts` | Создан | `fetchLibraries({limit, offset})` → `GET /api/common/libraries`, `fetchLibrary(id)` |
-| `frontend/src/api/books.api.ts` | Создан | `searchBooks(params)` → `GET /api/common/books` (фильтры + пагинация), `fetchBook(id)` |
-| `frontend/src/features/libraries/librariesSlice.ts` | Создан | Загрузка списка библиотек: `items/loading/error` |
-| `frontend/src/features/books/booksSlice.ts` | Создан | Поиск книг + защита от гонок через `requestId` из `action.meta.requestId` |
-| `frontend/src/app/store.ts` | Изменён | Подключены редьюсеры `libraries` и `books` |
-| `frontend/src/components/books/BookFilters.tsx` | Создан | Селект библиотек, автор, название, checkbox «Только доступные», «Найти»/«Сбросить» |
-| `frontend/src/components/books/BookCard.tsx` | Создан | Обложка с `onError`-плейсхолдером, название, автор, библиотека, доступность, ссылка `/books/:id` |
-| `frontend/src/pages/HomePage.tsx` | Переписан | Публичная страница поиска: фильтры, состояния loading/error/empty, список, пагинация |
-| `frontend/src/styles/pages/HomePage.scss` | Создан | Стили карточки книги (обложка 3:4, плейсхолдер) на токенах из `variables.scss` |
-| `frontend/src/styles/index.scss` | Изменён | Добавлен импорт `./pages/HomePage` |
+| Файл                                                | Действие  | Содержание                                                                                                                                                                                                                                                                      |
+| --------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `frontend/src/types/index.ts`                       | Изменён   | `Library` (nullable `description`), новый `BookLibrary {id,name,address}`, `Book` приведён к фактическому ответу `toBookResponse` (без `libraryId`, nullable `year/description/coverImage`, `createdAt/updatedAt`), новый `BookFilters {library, author, title, availableOnly}` |
+| `frontend/src/api/libraries.api.ts`                 | Создан    | `fetchLibraries({limit, offset})` → `GET /api/common/libraries`, `fetchLibrary(id)`                                                                                                                                                                                             |
+| `frontend/src/api/books.api.ts`                     | Создан    | `searchBooks(params)` → `GET /api/common/books` (фильтры + пагинация), `fetchBook(id)`                                                                                                                                                                                          |
+| `frontend/src/features/libraries/librariesSlice.ts` | Создан    | Загрузка списка библиотек: `items/loading/error`                                                                                                                                                                                                                                |
+| `frontend/src/features/books/booksSlice.ts`         | Создан    | Поиск книг + защита от гонок через `requestId` из `action.meta.requestId`                                                                                                                                                                                                       |
+| `frontend/src/app/store.ts`                         | Изменён   | Подключены редьюсеры `libraries` и `books`                                                                                                                                                                                                                                      |
+| `frontend/src/components/books/BookFilters.tsx`     | Создан    | Селект библиотек, автор, название, checkbox «Только доступные», «Найти»/«Сбросить»                                                                                                                                                                                              |
+| `frontend/src/components/books/BookCard.tsx`        | Создан    | Обложка с `onError`-плейсхолдером, название, автор, библиотека, доступность, ссылка `/books/:id`                                                                                                                                                                                |
+| `frontend/src/pages/HomePage.tsx`                   | Переписан | Публичная страница поиска: фильтры, состояния loading/error/empty, список, пагинация                                                                                                                                                                                            |
+| `frontend/src/styles/pages/HomePage.scss`           | Создан    | Стили карточки книги (обложка 3:4, плейсхолдер) на токенах из `variables.scss`                                                                                                                                                                                                  |
+| `frontend/src/styles/index.scss`                    | Изменён   | Добавлен импорт `./pages/HomePage`                                                                                                                                                                                                                                              |
 
 Backend, `.env`, работающие модули Дней 1–2 не изменялись. Коммит и тег `day-3` не создавались.
 
@@ -630,12 +629,12 @@ Backend, `.env`, работающие модули Дней 1–2 не изме�
 
 ## 4. Результаты проверок
 
-| Проверка | Результат |
-| --- | --- |
-| `npm run lint` (корень) | ✅ оба workspace, exit 0 |
+| Проверка                 | Результат                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` (корень)  | ✅ оба workspace, exit 0                                                                                                         |
 | `npm run build` (корень) | ✅ frontend (`tsc -b && vite build`) и backend (`nest build`) собраны (предупреждения Sass об `@import` — существовали и раньше) |
-| `npm test` (корень) | ✅ backend: 2 сюита, 44 теста; frontend: vitest — тестов нет, exit 0 |
-| `npm run test:e2e` | ✅ 1 сюит, 73 теста (включая фильтры и пагинацию `GET /api/common/books`) |
+| `npm test` (корень)      | ✅ backend: 2 сюита, 44 теста; frontend: vitest — тестов нет, exit 0                                                             |
+| `npm run test:e2e`       | ✅ 1 сюит, 73 теста (включая фильтры и пагинацию `GET /api/common/books`)                                                        |
 
 **Рантайм-сверка контракта API с типами (curl, локальный запуск собранного backend + PostgreSQL):**
 
@@ -676,3 +675,272 @@ Backend, `.env`, работающие модули Дней 1–2 не изме�
 3. **Фильтр библиотек** загружается одним запросом `limit=100` — при большем числе библиотек потребуется пагинация селекта.
 4. **`BookPage` не реализована** — вне объёма Дня 3 (ссылка с карточки ведёт на маршрут, который будет доработан).
 5. Коммит и тег `day-3` не создавались (ограничение задачи).
+
+---
+
+# Отчёт: День 4 — Backend «Аренда книг»
+
+Задание выполнено только в части **backend** (по условию задачи frontend не менялся, `.env` не менялся, зависимости не добавлялись, коммиты и тег `day-4` не создавались).
+
+## 1. Созданные и изменённые файлы
+
+**Созданы / наполнены** (файлы `backend/src/rentals/*`, кроме `interfaces/` и спек, были отслеживаемыми пустыми заглушками с Дня 1 — теперь наполнены):
+
+| Файл                                                         | Назначение                                                              |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `backend/src/rentals/entities/book-rental.entity.ts`         | сущность `BookRental` (таблица `book_rentals`)                          |
+| `backend/src/rentals/interfaces/rental-service.interface.ts` | `IRentalService`, `RentalStatus`, типы параметров                       |
+| `backend/src/rentals/dto/create-rental.dto.ts`               | тело `POST /api/client/rentals`                                         |
+| `backend/src/rentals/dto/change-status.dto.ts`               | тело `PATCH /api/manager/rentals/:id/status`                            |
+| `backend/src/rentals/dto/search-rentals-query.dto.ts`        | фильтры списков клиента и менеджера                                     |
+| `backend/src/rentals/rental.mapper.ts`                       | ответы API: базовый, со списком, для менеджера                          |
+| `backend/src/rentals/rentals.service.ts`                     | `RentalsService`: транзакции, правила, счётчики, `ActiveRentalsChecker` |
+| `backend/src/rentals/client-rentals.controller.ts`           | клиентские маршруты (`@Roles('client')`)                                |
+| `backend/src/rentals/manager-rentals.controller.ts`          | менеджерские маршруты (`@Roles('manager')`)                             |
+| `backend/src/rentals/rentals.module.ts`                      | `RentalsModule` (экспортирует `RentalsService`)                         |
+| `backend/src/rentals/rentals.service.spec.ts`                | 37 unit-тестов                                                          |
+| `backend/test/rentals.e2e-spec.ts`                           | 60 e2e-тестов на реальном PostgreSQL                                    |
+
+**Изменены:**
+
+- `backend/src/app.module.ts` — добавлен импорт `RentalsModule`.
+- `backend/src/libraries/libraries.module.ts` — импорт `RentalsModule` и `{ provide: ACTIVE_RENTALS_CHECKER, useExisting: RentalsService }` вместо заглушки.
+- `backend/src/libraries/interfaces/active-rentals-checker.interface.ts` — уточнён комментарий (реализация — `RentalsService`).
+
+**Удалён:** `backend/src/libraries/no-active-rentals-checker.ts` (заглушка Дня 3, заменена реальной проверкой).
+
+## 2. Структура `BookRental`
+
+Таблица `book_rentals` (спецификация, раздел 4):
+
+| Поле                     | Тип                                           | Примечание                                                |
+| ------------------------ | --------------------------------------------- | --------------------------------------------------------- |
+| `id`                     | number PK autoinc                             |                                                           |
+| `userId`                 | FK → `users`                                  | без каскада (удаления пользователей API не предусмотрены) |
+| `libraryId`              | FK → `libraries`                              | `ON DELETE CASCADE`                                       |
+| `bookId`                 | FK → `books`                                  | `ON DELETE CASCADE`                                       |
+| `dateStart`, `dateEnd`   | `date`                                        | `YYYY-MM-DD`, возвращаются строками                       |
+| `status`                 | enum `reserved\|active\|completed\|cancelled` | default `reserved`                                        |
+| `createdAt`, `updatedAt` | timestamp                                     |                                                           |
+
+Индекс `(bookId, status, dateStart, dateEnd)` — `idx_book_rentals_book_period`.
+Связи `ManyToOne` на `User`, `Library`, `Book` — для ответов API со списками.
+
+**Замечание по FK (противоречие спецификации №1).** Раздел 4 не задаёт `ON DELETE` для FK аренд, а раздел 2 п. 12 требует, чтобы книга/библиотека удалялись, кроме случая `reserved|active`. Значит, история завершённых/отменённых аренд не должна блокировать удаление — иначе FK дал бы 500 вместо 200. Принято решение: `bookId` и `libraryId` — `ON DELETE CASCADE` (история удаляется вместе с книгой; активные аренды до удаления не доходят — их блокирует проверка 409).
+
+## 3. Реализованные API и форматы ответов
+
+| Метод и путь                                                         | Доступ    | Ответ                                                             | Ошибки                                                                                               |
+| -------------------------------------------------------------------- | --------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `POST /api/client/rentals`                                           | `client`  | 201 `BookRental` (базовые поля, `status: reserved`)               | 400 (даты, `libraryId` ≠ библиотеке книги), 401, 403, 404 (нет книги), 409 (нет экземпляров на даты) |
+| `GET /api/client/rentals?status=&limit=&offset=`                     | `client`  | 200 свои аренды + `book: {id,title,author}`, `library: {id,name}` | 400 (невалидный status), 401, 403                                                                    |
+| `DELETE /api/client/rentals/:id`                                     | `client`  | 200 `BookRental` (`cancelled`)                                    | 400 (статус не `reserved`), 401, 403 (чужая), 404                                                    |
+| `GET /api/manager/rentals?userId=&libraryId=&status=&limit=&offset=` | `manager` | 200 аренды + `book`, `library`, `user: {id,name,email}`           | 400, 401, 403                                                                                        |
+| `PATCH /api/manager/rentals/:id/status`                              | `manager` | 200 `BookRental`                                                  | 400 (недопустимый переход/валидация), 401, 403, 404                                                  |
+
+Формат ошибок — стандартный Nest (`statusCode`, `message`, `error`), глобальный `ValidationPipe` с `whitelist`/`forbidNonWhitelisted`.
+Порядок проверок при отмене клиентом: 404 (нет) → 403 (чужая) → 400 (статус не `reserved`) — в спецификации приоритет не задан, выбрана такая последовательность.
+
+## 4. Таблица переходов статусов (спецификация, раздел 2, п. 11)
+
+| Переход                                                                                   | Кто инициирует                                           | Результат |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------- | --------- |
+| создание → `reserved`                                                                     | client                                                   | 201       |
+| `reserved → active`                                                                       | manager                                                  | 200       |
+| `reserved → cancelled`                                                                    | manager; client (только своя)                            | 200       |
+| `active → completed`                                                                      | manager                                                  | 200       |
+| `active → cancelled`                                                                      | manager (клиент не может: он отменяет только `reserved`) | 200       |
+| всё прочее (в т.ч. `reserved → completed`, `completed → active`, переход в тот же статус) | —                                                        | 400       |
+
+## 5. Правила изменения счётчиков (спецификация, раздел 2, п. 9)
+
+| Событие                     | `availableCopies`                                | `isAvailable`         |
+| --------------------------- | ------------------------------------------------ | --------------------- |
+| создание брони (`reserved`) | без изменений (`reserved` не занимает экземпляр) | без изменений         |
+| `reserved → active`         | −1                                               | `availableCopies > 0` |
+| `active → completed`        | +1                                               | `availableCopies > 0` |
+| `active → cancelled`        | +1                                               | `availableCopies > 0` |
+| `reserved → cancelled`      | без изменений                                    | без изменений         |
+
+Значение зажимается в диапазоне `0..totalCopies` (существующий CHECK в `books`): иначе теоретически возможный переход в `active` при `availableCopies = 0` (активные брони с непересекающимися датами) дал бы ошибку БД вместо ответа из спецификации — **решение зафиксировано как отклонение, т.к. спецификация такого случая не описывает, а среди ошибок PATCH нет 409**.
+
+Проверка пересечения при создании: число аренд `reserved|active` с `existing.dateStart <= new.dateEnd AND existing.dateEnd >= new.dateStart` (границы включительно) должно быть строго меньше `totalCopies`, иначе 409. Счётчик `availableOnly`/`isAvailable` при бронировании не трогается — `availableCopies` по спецификации означает «физически на полке сейчас».
+
+## 6. Транзакция и блокировка при создании брони
+
+`RentalsService.create` выполняется в `dataSource.transaction` в следующем порядке:
+
+1. валидация дат (формат `YYYY-MM-DD` и существующий календарный день, `dateStart >= сегодня`, `dateEnd >= dateStart`, длительность ≤ 30 дней) — 400;
+2. `SELECT ... FOR UPDATE` строки книги: `manager.findOne(Book, { lock: { mode: 'pessimistic_write' } })` — параллельные запросы сериализуются по этой блокировке;
+3. книга отсутствует → 404 (откат);
+4. `book.libraryId !== libraryId` → 400 (откат);
+5. `manager.count` пересекающихся `reserved|active` аренд → `>= totalCopies` даёт 409 (откат);
+6. `manager.save` новой брони со `status: reserved` (счётчики не меняются);
+7. фиксация транзакции.
+
+Смена статуса и отмена клиента также идут в транзакции с блокировкой строки аренды (и строки книги при изменении счётчиков), что исключает гонку «клиент отменяет — менеджер активирует» и потерю обновлений. Порядок блокировок везде «аренда → книга», в создании блокируется только книга — взаимоблокировок нет.
+
+Гонка проверена на уровне e2e в реальной PostgreSQL: два параллельных `POST` на одну книгу (`totalCopies=1`) дают ровно `[201, 409]`, и в БД остаётся ровно одна бронь.
+
+## 7. Проверка активных аренд при удалении
+
+`RentalsService` реализует `ActiveRentalsChecker`:
+
+- `hasActiveRentalsForBook(bookId)` — `count` аренд книги со `status IN (reserved, active) > 0`;
+- `hasActiveRentalsForLibrary(libraryId)` — то же по `libraryId` аренды.
+
+В `LibrariesModule` токен `ACTIVE_RENTALS_CHECKER` подключён через `useExisting: RentalsService` (заглушка `NoActiveRentalsChecker` удалена). `BooksService.delete` и `LibrariesService.delete` Day 3 не менялись — они продолжают бросать 409 по этому чекеру. Удаление обложек и каскадное удаление книг библиотеки сохранены (e2e подтверждает: после отмены брони библиотека удаляется вместе с книгами и обложками).
+
+## 8. Результаты проверок (выполнены в этой сессии)
+
+| Проверка                                                              | Результат                                                                                                                                |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| `npm run lint`                                                        | ✅ зелёный (backend + frontend)                                                                                                          |
+| `npm run build`                                                       | ✅ зелёный (frontend + backend)                                                                                                          |
+| `npm test` (unit)                                                     | ✅ **81/81** — 3 сьюты: `users`+`libraries` (44 прежних, не ослаблены) + `rentals` (37 новых)                                            |
+| `npm run test:e2e`                                                    | ✅ **133/133** — `app.e2e-spec` (73 прежних) + `rentals.e2e-spec` (60 новых), PostgreSQL                                                 |
+| `docker compose config`                                               | ✅ валиден                                                                                                                               |
+| `docker compose build`                                                | ✅ образ собрался                                                                                                                        |
+| `docker compose up -d app`                                            | ✅ контейнер поднялся, `GET /api/health` → 200                                                                                           |
+| Smoke production-запуска (`HTTP_PORT=3100 node backend/dist/main.js`) | ✅ маршруты аренды замаплены; гость: `GET /api/client/rentals` → 401, `GET /api/manager/rentals` → 401, публичные `GET /api/common/books | libraries` → 200 |
+| Схема в compose-БД                                                    | ✅ таблица `book_rentals` с enum, индексом `idx_book_rentals_book_period` и FK (проверено `psql \d book_rentals`)                        |
+
+**Покрыто автоматическими тестами** (все — на реальном PostgreSQL, где требуются транзакции): границы дат (сегодня, ровно 30 дней, 31 день, вчерашняя, `dateEnd < dateStart`, несуществующая календарная дата, неверный формат), `libraryId` не совпадает → 400, нет книги → 404, первая бронь `totalCopies=1` → 201, пересечение → 409, непересекающиеся → 201, включительные границы периодов, параллельное бронирование последнего экземпляра (`[201, 409]`, одна бронь в БД), отмена своей/чужой/не-`reserved`/несуществующей, все допустимые и недопустимые переходы, изменение и зажим счётчиков, `isAvailable`, списки и фильтры (клиент и менеджер), матрица 401/403 для гостя/клиента/менеджера/админа, удаление книги и библиотеки с `reserved`/`active` арендами → 409, после `cancelled`/`completed` → 200 (каскад).
+
+**Ручная проверка мной НЕ выполнялась** (только автоматические тесты и smoke-запросы curl). Сценарии для ручной проверки — в п. 11.
+
+## 9. Проблемы и ограничения
+
+1. **Frontend Дня 4** (AdminLibrariesPage, AdminBooksPage, BookPage) не делался — задача ограничена backend; фронтенд-часть Дня 4 и критерии приёмки «Из UI admin создаёт…» остаются на следующий шаг.
+2. **Гонка** проверена двумя параллельными HTTP-запросами из одного процесса Jest к одному серверу; отдельный тест двух независимых процессов не писался — блокировка `FOR UPDATE` в этом же сценарии.
+3. **`availableCopies` зажимается** в `0..totalCopies` (см. п. 5) — отклонение от «чистой» арифметики, продиктованное отсутствием 409 в списке ошибок PATCH.
+4. **Каскадное удаление истории аренд** вместе с книгой (п. 2) — следствие отсутствия `ON DELETE` в спецификации.
+5. **Удаления пользователей нет** в API, FK `userId` без каскада — при будущем добавлении удаления пользователей потребуется решение по их броням.
+6. Миграций нет — по спецификации используется `DB_SYNCHRONIZE=true`.
+7. Счётчик «физически на полке» не учитывает будущие периоды: две непересекающиеся по датам `active`-брони при `totalCopies=1` приведут availableCopies к зажатому 0 (см. п. 5) — по спецификации это поведение не определено.
+8. Коммит и тег `day-4` не создавались (ограничение задачи).
+
+## 10. HTTP-сценарии для ручной проверки
+
+Запуск: `docker compose up --build` (порт из `.env`, по умолчанию 3000) либо локально `HTTP_PORT=3100 npm start` (3000 может занимать контейнер). `BASE=http://localhost:3000/api`.
+
+```bash
+JAR_A=/tmp/lb-a.jar; JAR_B=/tmp/lb-b.jar; JAR_M=/tmp/lb-m.jar; JAR_D=/tmp/lb-admin.jar
+
+# 1) Матрица доступа (гость)
+curl -s -o /dev/null -w '%{http_code}\n' -X POST $BASE/client/rentals            # 401
+curl -s -o /dev/null -w '%{http_code}\n' $BASE/client/rentals                    # 401
+curl -s -o /dev/null -w '%{http_code}\n' $BASE/manager/rentals                   # 401
+curl -s -o /dev/null -w '%{http_code}\n' -X PATCH $BASE/manager/rentals/1/status \
+  -H 'Content-Type: application/json' -d '{"status":"active"}'                   # 401
+
+# 2) Регистрация и вход (двух клиентов), вход менеджера и админа
+curl -s -c $JAR_A -X POST $BASE/client/register -H 'Content-Type: application/json' \
+  -d '{"email":"a@test.local","password":"Passw0rd!","name":"Клиент А"}'          # 201
+curl -s -c $JAR_A -X POST $BASE/auth/login -H 'Content-Type: application/json' \
+  -d '{"email":"a@test.local","password":"Passw0rd!"}'                            # 200
+# повторить для b@test.local → $JAR_B; менеджер:
+curl -s -c $JAR_M -X POST $BASE/auth/login -H 'Content-Type: application/json' \
+  -d "{\"email\":\"$SEED_MANAGER_EMAIL\",\"password\":\"$SEED_MANAGER_PASSWORD\"}"  # 200
+curl -s -c $JAR_D -X POST $BASE/auth/login -H 'Content-Type: application/json' \
+  -d "{\"email\":\"$SEED_ADMIN_EMAIL\",\"password\":\"$SEED_ADMIN_PASSWORD\"}"      # 200
+
+# 3) Права: клиент на менеджерские, менеджер на клиентские
+curl -s -o /dev/null -w '%{http_code}\n' -b $JAR_A $BASE/manager/rentals          # 403
+curl -s -o /dev/null -w '%{http_code}\n' -b $JAR_M $BASE/client/rentals           # 403
+
+# 4) Книга с одним экземпляром (admin)
+curl -s -c $JAR_D -X POST $BASE/admin/books -F 'title=Тест' -F 'author=Х' \
+  -F 'libraryId=1' -F 'totalCopies=1'                                             # 201 → BOOK_ID, LIB_ID=1
+
+# 5) Бронирование: правила дат (все даты — будущие, YYYY-MM-DD)
+curl -s -b $JAR_A -X POST $BASE/client/rentals -H 'Content-Type: application/json' \
+  -d "{\"bookId\":$BOOK_ID,\"libraryId\":1,\"dateStart\":\"2026-12-01\",\"dateEnd\":\"2026-12-05\"}"   # 201
+# пересечение от B → 409; 2026-12-06..12-10 (непересек.) → 201
+# dateEnd раньше dateStart → 400; вчерашняя дата → 400; срок 31 день → 400
+# libraryId чужой библиотеки → 400; bookId=999999 → 404
+
+# 6) Гонка за последний экземпляр (параллельно, одни и те же даты, книга totalCopies=1)
+curl -s -o /dev/null -w '%{http_code}\n' -b $JAR_A -X POST $BASE/client/rentals \
+  -H 'Content-Type: application/json' \
+  -d "{\"bookId\":$BOOK_ID,\"libraryId\":1,\"dateStart\":\"2027-01-10\",\"dateEnd\":\"2027-01-15\"}" &
+curl -s -o /dev/null -w '%{http_code}\n' -b $JAR_B -X POST $BASE/client/rentals \
+  -H 'Content-Type: application/json' \
+  -d "{\"bookId\":$BOOK_ID,\"libraryId\":1,\"dateStart\":\"2027-01-10\",\"dateEnd\":\"2027-01-15\"}" &
+wait                                                                        # один 201, второй 409
+
+# 7) Свои аренды и отмена
+curl -s -b $JAR_A $BASE/client/rentals                                        # 200, только свои + book/library
+curl -s -b $JAR_A "$BASE/client/rentals?status=reserved"                      # 200
+curl -s -b $JAR_B -X DELETE $BASE/client/rentals/$RENTAL_A                    # 403 (чужая)
+curl -s -b $JAR_A -X DELETE $BASE/client/rentals/$RENTAL_A                    # 200 cancelled
+curl -s -b $JAR_A -X DELETE $BASE/client/rentals/$RENTAL_A                    # 400 (уже cancelled)
+
+# 8) Менеджер: статусы и счётчики
+curl -s -b $JAR_M "$BASE/manager/rentals?status=reserved"                     # 200 + user/book/library
+curl -s $BASE/common/books/$BOOK_ID                                           # availableCopies до/после
+curl -s -b $JAR_M -X PATCH $BASE/manager/rentals/$RENTAL_B/status \
+  -H 'Content-Type: application/json' -d '{"status":"active"}'                # 200, availableCopies −1
+curl -s -b $JAR_M -X PATCH $BASE/manager/rentals/$RENTAL_B/status \
+  -H 'Content-Type: application/json' -d '{"status":"completed"}'             # 200, +1
+# reserved→completed → 400; completed→active → 400; status=reserved → 400; id=999999 → 404
+
+# 9) Удаление при активных арендам
+curl -s -b $JAR_D -X DELETE $BASE/admin/books/$BOOK_WITH_RENTAL               # 409 (reserved|active)
+curl -s -b $JAR_D -X DELETE $BASE/admin/libraries/$LIB_WITH_ACTIVE_RENTAL     # 409
+# после отмены/завершения всех броней: 200, книга/библиотека и её история аренд удалены
+
+# 10) Пагинация и фильтры менеджера
+curl -s -b $JAR_M "$BASE/manager/rentals?userId=5&libraryId=1&status=active&limit=10&offset=0"  # 200
+curl -s -b $JAR_M "$BASE/manager/rentals?status=bogus"                        # 400
+```
+
+Готово — всё проверено: lint ✅, build ✅, unit-тесты 81/81 ✅. Swiper CSS и блок попали в бандл.
+Что сделано
+Файл Что внутри
+frontend/package.json зависимость swiper@^14.4.0
+frontend/src/components/books/BookSwiper.tsx создан — отдельный компонент слайдера
+frontend/src/styles/components/BookSwiper.scss создан — стили блока (стрелки, пули, адаптив)
+frontend/src/styles/index.scss подключён @import './components/BookSwiper'
+frontend/src/pages/HomePage.tsx <BookSwiper /> первым элементом страницы (до <h1>) — больше ничего не менялось
+Как использовать
+import BookSwiper from '../components/books/BookSwiper';
+
+// 1) Случайные 5 книг (как сейчас на главной):
+<BookSwiper />
+
+// 2) Конкретные книги — передаёте id, порядок массива = порядок слайдов:
+<BookSwiper bookIds={[3, 7, 12]} title="Новинки" />
+
+// 3) Автопрокрутка и другой заголовок:
+<BookSwiper title="Рекомендуем" randomCount={8} autoplay />
+Пропсы
+Пропс Тип По умолчанию Описание
+bookIds number[] — id книг в слайдерах. Неууществующие/удалённые id молча пропускаются; если не найдено ни одной — ошибка с кнопкой «Повторить». Если не указан — случайная выборка
+title string «Случайные книги» / «Подборка книг» заголовок блока
+randomCount number 5 сколько случайных книг, если bookIds не задан
+autoplay boolean false автопрокрутка (3.5 с)
+Как настраивать сам Swiper
+Все опции — в JSX компонента, внутри <Swiper …> (там стоят комментарии):
+<Swiper
+modules={[Navigation, Pagination, Keyboard, Autoplay]} // какие модули подключены
+navigation // стрелки вкл/выкл
+pagination={{ clickable: true }} // точки (false — убрать)
+keyboard // листать стрелками клавиатуры
+autoplay={autoplay ? { delay: 3500, disableOnInteraction: false } : false}
+spaceBetween={16} // отступ между слайдами
+slidesPerView={1} // слайдов на экране
+breakpoints={{                                           // адаптив по ширине
+    576: { slidesPerView: 2 },
+    992: { slidesPerView: 3 },
+    1400: { slidesPerView: 4 },
+  }}
+
+> Полезные опции: loop (зацикленное листание, нужен запас слайдов), speed (скорость анимации), effect="fade" (нужен модуль EffectFade + его CSS), freeMode, scrollbar. Импортируйте CSS нового модуля в начале файла — например import 'swiper/css/effect-fade'. Стили стрелок/точек кастомизируются в BookSwiper.scss через CSS-переменные Swiper (--swiper-navigation-size и т.п.).
+> Поведение
+
+- loading → Loader, ошибка → ErrorAlert + «Повторить», пусто (каталог пуст или все id не найдены) → блок просто не показывается;
+- при bookIds книги грузятся параллельно по GET /common/books/:id и выводятся строго в вашем порядке;
+- без bookIds — случайная выборка (Fisher–Yates) из первых 100 книг каталога; выборка обновляется при каждой загрузке страницы;
+- перезапрос не происходит зря: зависимость effect — строка idsKey от bookIds.join(','), поэтому литерал массива в JSX не вызывает бесконечных запросов;
+- размер бандла вырос (~520 кб, появилось предупреждение Vite о чанке >500 кб) — это предупреждение, не ошибка; при желании позже можно вынести Swiper в lazy-импорт.

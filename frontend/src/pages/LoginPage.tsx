@@ -91,7 +91,7 @@ const LoginPage = () => {
         )}
         {error && <ErrorAlert message={error} />}
         <Form onSubmit={handleSubmit} noValidate>
-          <Form.Group className="mb-3" controlId="login-email">
+          <Form.Group className="auth__form-group" controlId="login-email">
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
@@ -107,7 +107,7 @@ const LoginPage = () => {
               </Form.Control.Feedback>
             )}
           </Form.Group>
-          <Form.Group className="mb-4" controlId="login-password">
+          <Form.Group className="auth__form-group--password" controlId="login-password">
             <Form.Label>Пароль</Form.Label>
             <div className="auth__input-wrapper">
               <Form.Control

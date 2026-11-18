@@ -7,10 +7,20 @@
 @import './components/Navbar';
 @import './components/Footer';
 @import './components/BookCard';
+@import './components/BookSwiper';
+@import './components/users/UsersFilters';
+@import './components/users/CreateUserForm';
+@import './components/books/BookFilters';
+@import './components/common/Pagination';
+@import './components/common/Loader';
+@import './components/common/Map';
+@import './components/users/UsersTable';
 @import './pages/LoginPage';
 @import './pages/RegisterPage';
 @import './pages/NotFoundPage';
 @import './pages/HomePage';
+@import './pages/ManagerUsersPage';
+@import './pages/AdminUsersPage';
 
 body {
   margin: 0;

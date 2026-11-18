@@ -12,10 +12,11 @@
   border-radius: $radius-card;
   overflow: hidden;
   font-family: $font-family;
+  height: 100%;
 
   &__body {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 39px;
     padding: 31px 31px 0;
     flex: 1;
@@ -117,6 +118,7 @@
   &__description {
     display: -webkit-box;
     -webkit-line-clamp: 5;
+    line-clamp: 5;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -188,6 +190,16 @@
       transform: translate(0, 0);
       box-shadow: $shadow-card;
     }
+  }
+
+  &--full-height {
+    height: 100%; // h-100
+  }
+
+  &--slider {
+    // Фиксированный размер карточки по макету «Новые поступления» (Figma node 1:830):
+    // высота 486px, ширина определяется контейнером слайдера.
+    height: 486px;
   }
 }
 

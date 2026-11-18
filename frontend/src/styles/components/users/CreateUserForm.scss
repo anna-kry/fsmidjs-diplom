@@ -1,0 +1,26 @@
+@import '../../variables';
+
+// Форма создания пользователя (строка полей + кнопка отправки).
+
+.create-user {
+  &__row {
+    display: grid;
+    gap: 1rem; // g-3
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr); // xs=12, md=4 → 3 колонки
+    }
+  }
+
+  &__form-group {
+    margin-bottom: 0; // mb-0
+  }
+
+  &__button-column {
+    display: flex;
+    align-items: end; // align-items-end
+  }
+
+  &__submit-button {
+    width: 100%; // w-100
+  }
+}

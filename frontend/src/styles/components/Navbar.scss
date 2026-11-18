@@ -5,10 +5,52 @@
   border-bottom: 1px solid $color-border;
   padding: 12px 0;
 
-  .container {
+  &__container {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 32px;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__center {
+    flex: 1;
+    text-align: center;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  &__auth-btn {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.2;
+    color: $color-text;
+    text-decoration: none;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      color: $color-accent;
+    }
+  }
+
+  &__user-name {
+    font-family: $font-family;
+    font-size: 16px;
+    color: $color-text;
+    white-space: nowrap;
   }
 
   &__logo {
@@ -19,63 +61,14 @@
     color: $color-text;
     text-decoration: none;
     white-space: nowrap;
-    margin-right: auto;
+    margin: 0;
 
     &:hover {
       color: $color-text;
     }
   }
 
-  &__toggler {
-    border: 1px solid $color-border;
-    border-radius: $radius-input;
-    padding: 8px 12px;
-    background: transparent;
-
-    .navbar-app__toggler-icon {
-      display: block;
-      width: 24px;
-      height: 2px;
-      background: $color-text;
-      position: relative;
-
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        width: 24px;
-        height: 2px;
-        background: $color-text;
-      }
-
-      &::before {
-        top: -7px;
-      }
-
-      &::after {
-        top: 7px;
-      }
-    }
-  }
-
-  &__collapse {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    flex: 1;
-  }
-
-  &__nav {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  &__link {
+  &__anchor {
     font-family: $font-family;
     font-weight: 600;
     font-size: 16px;
@@ -84,102 +77,30 @@
     text-decoration: none;
     white-space: nowrap;
 
-    &:hover,
-    &:focus-visible {
+    &:hover {
       color: $color-accent;
-      text-decoration: none;
     }
   }
 
-  &__user {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-left: auto;
-  }
-
-  &__name {
-    font-family: $font-family;
-    font-size: 16px;
-    color: $color-text;
-    white-space: nowrap;
-  }
-
-  // Кнопки действия в шапке
-  &__button {
-    font-family: $font-family;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 1.2;
-    color: $color-text;
-    background: $color-accent;
-    border: 1px solid $color-border;
-    border-radius: $radius-input;
-    box-shadow: $shadow-card;
-    padding: 16px 24px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition:
-      transform 0.15s ease,
-      box-shadow 0.15s ease;
-
-    &:hover,
-    &:focus-visible {
-      color: $color-text;
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px $color-border;
-    }
-
-    &:active {
-      transform: translate(0, 0);
-      box-shadow: $shadow-card;
-    }
-
-    // «Выход» — quieter вариант
-    &--ghost {
-      background: transparent;
-      box-shadow: none;
-      padding: 8px 0;
-
-      &:hover,
-      &:focus-visible {
-        color: $color-accent;
-        transform: none;
-        box-shadow: none;
-      }
-    }
-  }
-}
-
-@media (max-width: 991.98px) {
-  .navbar-app {
-    &__logo {
-      font-size: 28px;
-      margin-right: 0;
-    }
-
-    .container {
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    &__collapse {
+  @media (max-width: 991.98px) {
+    &__container {
       flex-direction: column;
-      align-items: flex-start;
       gap: 16px;
+    }
+
+    &__left {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    &__center {
       width: 100%;
     }
 
-    &__nav {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-    }
-
-    &__user {
-      margin-left: 0;
+    &__right {
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
     }
   }
 }

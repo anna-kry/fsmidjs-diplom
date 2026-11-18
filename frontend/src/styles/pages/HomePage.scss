@@ -1,4 +1,139 @@
 @import '../variables';
 
-// Главная страница: результаты поиска книг.
+// Главная страница: поиск книг, блоки свайперов, раздел «О нас».
 // Стили карточки книги вынесены в components/BookCard.scss (общий класс book-card).
+
+.homepage {
+  &__heading {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 1.5rem; // mb-4
+  }
+
+  // Карточка блока поиска (макет Figma, frame 1:1616 «search form»):
+  // карточка 732px, внутренний отступ 32px, поля 668px.
+  // По макету: зелёный фон #d6ead8, чёрная рамка 1px, радиус 32px, тени нет.
+  &__search-card {
+    margin-bottom: 1.5rem;
+    background: $color-bg-search-card;
+    border: 1px solid $color-border;
+    border-radius: $radius-card;
+  }
+
+  &__search-body {
+    padding: 32px; // внутренний отступ карточки по макету
+  }
+
+  &__filters-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__main-column {
+    width: 100%; // col-12
+    @media (min-width: 1200px) {
+      width: 83.333333%; // col-xl-10
+    }
+    @media (min-width: 1400px) {
+      width: 75%; // col-xxl-9
+    }
+  }
+
+  &__card {
+    margin-bottom: 1.5rem; // mb-4
+  }
+
+  &__section-title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 1.25rem; // h5
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0;
+  }
+
+  &__retry-button {
+    margin-bottom: 1rem; // mb-3
+  }
+
+  &__empty-state {
+    text-align: center; // text-center
+    padding-top: 3rem; // py-5
+    padding-bottom: 3rem; // py-5
+  }
+
+  &__empty-message {
+    margin-bottom: 1rem; // mb-3
+  }
+
+  &__books-grid {
+    display: grid;
+    gap: 1rem; // g-3
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(2, 1fr); // col-sm-6
+    }
+    @media (min-width: 992px) {
+      grid-template-columns: repeat(3, 1fr); // col-lg-4
+    }
+    @media (min-width: 1200px) {
+      grid-template-columns: repeat(4, 1fr); // col-xl-3
+    }
+  }
+
+  &__book-cell {
+    width: 100%; // col-12
+  }
+
+  // Раздел «О нас» (макет Figma, frame 1:920 «about»).
+  // По макету это полоса на всю ширину вьюпорта: фон #f0fff1, чёрная рамка
+  // 1px, радиус 32px. Внутренние отступы кадра: 118px сверху, 107px снизу.
+  // Горизонтальные отступы (50vw - 50%) возвращают контент в колонку main —
+  // в макете текст начинается по той же оси X, что и карточка поиска;
+  // max(32px, ...) не даёт тексту коснуться рамки на узких экранах.
+  // Внимание: &__about-title / &__about-text — соседи &__about, а не вложенность:
+  // запись &__about { &__title } скомпилировалась бы в .homepage__about__title
+  // и не совпала бы с классом в разметке.
+  &__about {
+    margin: 48px calc(50% - 50vw); // полоса от края до края вьюпорта
+    padding: 118px max(32px, 50vw - 50%) 107px;
+    background: $color-bg-about;
+    border: 1px solid $color-border;
+    border-radius: $radius-card;
+  }
+
+  &__about-title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 36px; // высота строки 43px — как у текста в макете
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 24px; // текст начинается на y=67 при высоте заголовка 43px
+  }
+
+  &__about-text {
+    font-family: $font-family;
+    font-weight: 400;
+    font-size: 16px; // по макету 16px
+    line-height: 1.5; // высота строки 24px — как в макете
+    color: $color-text;
+    margin: 0;
+    max-width: 733px; // ширина колонки текста по макету
+  }
+
+  // Отступы кадра заданы для десктопного макета (1920px),
+  // на узких экранах они были бы чрезмерно велики.
+  @media (max-width: 767.98px) {
+    &__about {
+      padding-top: 48px;
+      padding-bottom: 48px;
+    }
+
+    &__about-title {
+      font-size: 28px;
+    }
+  }
+}

@@ -16,10 +16,10 @@ const Pagination = ({ offset, limit, hasNext, onChange }: PaginationProps) => {
 
   return (
     <nav
-      className="d-flex justify-content-between align-items-center mt-3"
+      className="pagination__nav"
       aria-label="Пагинация"
     >
-      <span className="text-body-secondary">Страница {page}</span>
+      <span className="pagination__page-text">Страница {page}</span>
       <div>
         <Button
           variant="outline-secondary"
@@ -32,7 +32,7 @@ const Pagination = ({ offset, limit, hasNext, onChange }: PaginationProps) => {
         <Button
           variant="outline-secondary"
           size="sm"
-          className="ms-2"
+          className="pagination__button--forward"
           disabled={!hasNext}
           onClick={() => onChange(offset + limit)}
         >

@@ -7,15 +7,18 @@ import type { Book } from '../../types';
  * жёлтая кнопка «Забронировать» внизу. Общий класс book-card на всех страницах.
  * Обложка приходит относительным путём `/uploads/...` — используем как есть
  * (в dev её проксирует Vite, в prod раздаёт backend).
+ *
+ * @param variant - вариант оформления: 'default' (сетка) или 'slider' (свайпер,
+ * фиксированная высота по макету «Новые поступления»).
  */
-const BookCard = ({ book }: { book: Book }) => {
+const BookCard = ({ book, variant = 'default' }: { book: Book; variant?: 'default' | 'slider' }) => {
   const [coverFailed, setCoverFailed] = useState(false);
 
   const showCover = Boolean(book.coverImage) && !coverFailed;
   const available = book.availableCopies > 0;
 
   return (
-    <article className="book-card h-100">
+    <article className={`book-card book-card--${variant}`}>
       <div className="book-card__body">
         <div className="book-card__cover">
           {showCover ? (

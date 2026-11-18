@@ -12,11 +12,11 @@ const Loader = ({ text = 'Загрузка…', fullPage = false }: LoaderProps)
       role="status"
       className={
         fullPage
-          ? 'd-flex justify-content-center align-items-center min-vh-100 py-5'
-          : 'text-center py-4'
+          ? 'loader--full-page'
+          : 'loader--inline'
       }
     >
-      <Spinner animation="border" size="sm" className="me-2" />
+      <Spinner animation="border" size="sm" className="loader__spinner" />
       <span>{text}</span>
     </div>
   );

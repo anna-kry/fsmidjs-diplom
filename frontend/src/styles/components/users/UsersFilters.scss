@@ -1,0 +1,19 @@
+@import '../../variables';
+
+// Фильтры пользователей (строка полей + кнопки_actions).
+
+.users-filters {
+  &__row {
+    display: grid;
+    gap: 1rem; // g-3
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr); // xs=12, md=4 → 3 колонки
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem; // gap-2
+    margin-top: 1rem; // mt-3
+  }
+}

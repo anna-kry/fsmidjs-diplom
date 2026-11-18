@@ -110,7 +110,7 @@ const RegisterPage = () => {
         </h1>
         {error && <ErrorAlert message={error} />}
         <Form onSubmit={handleSubmit} noValidate>
-          <Form.Group className="mb-3" controlId="register-email">
+          <Form.Group className="auth__form-group" controlId="register-email">
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
@@ -126,7 +126,7 @@ const RegisterPage = () => {
               </Form.Control.Feedback>
             )}
           </Form.Group>
-          <Form.Group className="mb-3" controlId="register-password">
+          <Form.Group className="auth__form-group" controlId="register-password">
             <Form.Label>Пароль</Form.Label>
             <div className="auth__input-wrapper">
               <Form.Control
@@ -160,7 +160,7 @@ const RegisterPage = () => {
             )}
             <Form.Text>Минимум 8 символов.</Form.Text>
           </Form.Group>
-          <Form.Group className="mb-3" controlId="register-name">
+          <Form.Group className="auth__form-group" controlId="register-name">
             <Form.Label>Имя</Form.Label>
             <Form.Control
               type="text"
@@ -176,7 +176,7 @@ const RegisterPage = () => {
               </Form.Control.Feedback>
             )}
           </Form.Group>
-          <Form.Group className="mb-4" controlId="register-phone">
+          <Form.Group className="auth__form-group--phone" controlId="register-phone">
             <Form.Label>Контактный телефон</Form.Label>
             <Form.Control
               type="tel"
