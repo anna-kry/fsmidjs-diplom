@@ -2,6 +2,7 @@ import { Button, Navbar, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
+import type { UserRole } from '../../types';
 
 /**
  * Шапка сайта по макету Figma (frame 1:810 «main»):
@@ -18,6 +19,20 @@ const LayoutNavbar = () => {
   const handleLogout = async () => {
     await dispatch(logout());
     navigate('/');
+  };
+
+  /** Путь в личный кабинет в зависимости от роли пользователя. */
+  const getMainPath = (role: UserRole | undefined) => {
+    switch (role) {
+      case 'admin':
+        return '/admin/main';
+      case 'manager':
+        return '/manager/main';
+      case 'client':
+        return '/user/main';
+      default:
+        return '/';
+    }
   };
 
   return (
@@ -38,7 +53,13 @@ const LayoutNavbar = () => {
               >
                 Выйти
               </Button>
-              <span className="navbar-app__user-name">{user.name}</span>
+              <span
+                className="navbar-app__user-name"
+                onClick={() => navigate(getMainPath(user.role))}
+                style={{ cursor: 'pointer' }}
+              >
+                {user.name}
+              </span>
             </>
           )}
         </div>

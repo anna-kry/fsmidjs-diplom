@@ -4,6 +4,7 @@
 @import './variables';
 @import './global';
 @import './components/Layout';
+@import './components/UserMenu';
 @import './components/Navbar';
 @import './components/Footer';
 @import './components/BookCard';
@@ -21,6 +22,9 @@
 @import './pages/HomePage';
 @import './pages/ManagerUsersPage';
 @import './pages/AdminUsersPage';
+@import './pages/AdminLibrariesPage';
+@import './pages/AdminBooksPage';
+@import './pages/BookPage';
 
 body {
   margin: 0;

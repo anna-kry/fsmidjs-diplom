@@ -1,0 +1,129 @@
+@import '../variables';
+
+/* Страница управления книгами (роль admin). */
+
+.admin-books {
+  &__heading {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 1.5rem; // mb-4
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__main-column {
+    width: 100%; // col-12
+    @media (min-width: 1200px) {
+      width: 83.333333%; // col-xl-10
+    }
+    @media (min-width: 1400px) {
+      width: 66.666667%; // col-xxl-8
+    }
+  }
+
+  &__card {
+    margin-bottom: 1.5rem; // mb-4
+  }
+
+  &__section-title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 1.25rem; // h5
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 1rem; // mb-4
+  }
+
+  &__form-group {
+    margin-bottom: 1rem; // mb-3
+  }
+
+  &__form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  &__submit-button {
+    width: auto;
+  }
+
+  &__cover-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__cover-preview-img {
+    max-width: 200px;
+    max-height: 250px;
+    object-fit: cover;
+    border: 1px solid $color-border;
+    border-radius: $radius-input;
+    background: $color-input-bg;
+  }
+
+  &__cover-thumb {
+    width: 48px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: $radius-input;
+  }
+
+  &__table {
+    width: 100%;
+  }
+
+  &__empty-message {
+    color: $color-text;
+    font-family: $font-family;
+    font-size: 16px;
+  }
+
+  /* Сетка карточек книг (как на главной странице каталога). */
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  &__book-cell {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  &__empty-message {
+    font-size: 16px;
+  }
+}
+
+/* Инлайн-ссылка в alert (вернуться к библиотекам). */
+.btn-link--inline {
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+.btn-link--inline:hover {
+  color: $color-menu-active;
+}

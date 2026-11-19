@@ -7,6 +7,8 @@ interface BookFiltersProps {
   libraries: Library[];
   onApply: (filters: BookFiltersValue) => void;
   onReset: () => void;
+  /** Скрыть поле выбора библиотеки (используется на странице книг одной библиотеки). */
+  hideLibraryFilter?: boolean;
 }
 
 /**
@@ -18,7 +20,12 @@ interface BookFiltersProps {
  * из Bootstrap: те задают width/padding и отрицательные поля, которые
  * конфликтуют с CSS Grid (у грид-элемента containing block — его grid-area).
  */
-const BookFilters = ({ libraries, onApply, onReset }: BookFiltersProps) => {
+const BookFilters = ({
+  libraries,
+  onApply,
+  onReset,
+  hideLibraryFilter = false,
+}: BookFiltersProps) => {
   const [library, setLibrary] = useState('');
   const [author, setAuthor] = useState('');
   const [title, setTitle] = useState('');
@@ -27,7 +34,7 @@ const BookFilters = ({ libraries, onApply, onReset }: BookFiltersProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onApply({
-      library,
+      library: hideLibraryFilter ? '' : library,
       author: author.trim(),
       title: title.trim(),
       availableOnly,
@@ -45,25 +52,26 @@ const BookFilters = ({ libraries, onApply, onReset }: BookFiltersProps) => {
   return (
     <Form onSubmit={handleSubmit} className="book-filters__form">
       <div className="book-filters__row">
-        <div className="book-filters__field">
-          <Form.Label htmlFor="filter-library" className="book-filters__label">
-            Библиотека
-          </Form.Label>
-          <Form.Select
-            id="filter-library"
-            className="book-filters__select"
-            value={library}
-            onChange={(event) => setLibrary(event.target.value)}
-          >
-            <option value="">Все библиотеки</option>
-            {libraries.map((item) => (
-              <option key={item.id} value={String(item.id)}>
-                {item.name}
-              </option>
-            ))}
-          </Form.Select>
-        </div>
-
+        {!hideLibraryFilter && (
+          <div className="book-filters__field">
+            <Form.Label htmlFor="filter-library" className="book-filters__label">
+              Библиотека
+            </Form.Label>
+            <Form.Select
+              id="filter-library"
+              className="book-filters__select"
+              value={library}
+              onChange={(event) => setLibrary(event.target.value)}
+            >
+              <option value="">Все библиотеки</option>
+              {libraries.map((item) => (
+                <option key={item.id} value={String(item.id)}>
+                  {item.name}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+        )}
         <div className="book-filters__field">
           <Form.Label htmlFor="filter-author" className="book-filters__label">
             Автор

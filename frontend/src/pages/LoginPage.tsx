@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import ErrorAlert from '../components/common/ErrorAlert';
 import { clearError, login } from '../features/auth/authSlice';
+import type { UserRole } from '../types';
 
 interface FieldErrors {
   email?: string;
@@ -59,8 +60,15 @@ const LoginPage = () => {
     }
 
     try {
-      await dispatch(login({ email: email.trim(), password })).unwrap();
-      navigate(from, { replace: true });
+      const user = await dispatch(
+        login({ email: email.trim(), password })
+      ).unwrap();
+      const roleToPath: Record<UserRole, string> = {
+        admin: '/admin/main',
+        manager: '/manager/main',
+        client: '/user/main',
+      };
+      navigate(roleToPath[user.role] ?? from, { replace: true });
     } catch {
       // Сообщение об ошибке уже сохранено в Redux и показывается ниже.
     }

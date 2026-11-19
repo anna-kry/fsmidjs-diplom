@@ -9,9 +9,12 @@ import NotFoundPage from '../pages/NotFoundPage';
 import AdminLibrariesPage from '../pages/admin/AdminLibrariesPage';
 import AdminBooksPage from '../pages/admin/AdminBooksPage';
 import AdminUsersPage from '../pages/admin/AdminUsersPage';
+import AdminMainPage from '../pages/admin/AdminMainPage';
 import ManagerUsersPage from '../pages/manager/ManagerUsersPage';
 import ManagerRentalsPage from '../pages/manager/ManagerRentalsPage';
 import ManagerSupportPage from '../pages/manager/ManagerSupportPage';
+import ManagerMainPage from '../pages/manager/ManagerMainPage';
+import ClientMainPage from '../pages/client/ClientMainPage';
 import GuestRoute from '../components/guards/GuestRoute';
 import RoleRoute from '../components/guards/RoleRoute';
 
@@ -97,6 +100,30 @@ const AppRouter = () => {
         element={
           <RoleRoute roles={['manager']}>
             <ManagerSupportPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/admin/main"
+        element={
+          <RoleRoute roles={['admin']}>
+            <AdminMainPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/manager/main"
+        element={
+          <RoleRoute roles={['manager']}>
+            <ManagerMainPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/user/main"
+        element={
+          <RoleRoute roles={['client']}>
+            <ClientMainPage />
           </RoleRoute>
         }
       />

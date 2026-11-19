@@ -42,6 +42,20 @@ export interface Library {
   description?: string | null;
 }
 
+/** Тело POST /api/admin/libraries. */
+export interface CreateLibraryInput {
+  name: string;
+  address: string;
+  description?: string;
+}
+
+/** Тело PUT /api/admin/libraries/:id (все поля необязательны). */
+export interface UpdateLibraryInput {
+  name?: string;
+  address?: string;
+  description?: string;
+}
+
 /** Библиотека внутри книги: API возвращает только { id, name, address }. */
 export interface BookLibrary {
   id: ID;
@@ -71,6 +85,28 @@ export interface BookFilters {
   author: string;
   title: string;
   availableOnly: boolean;
+}
+
+/** Тело POST /api/admin/books (multipart/form-data). */
+export interface CreateBookInput {
+  title: string;
+  author: string;
+  year?: number;
+  description?: string;
+  libraryId: number;
+  totalCopies: number;
+  coverImage?: File | null;
+}
+
+/** Тело PUT /api/admin/books/:id (все поля необязательны, multipart/form-data). */
+export interface UpdateBookInput {
+  title?: string;
+  author?: string;
+  year?: number;
+  description?: string;
+  libraryId?: number;
+  totalCopies?: number;
+  coverImage?: File | null;
 }
 
 export type RentalStatus = 'reserved' | 'active' | 'completed' | 'cancelled';
