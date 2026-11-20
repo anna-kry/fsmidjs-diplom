@@ -59,7 +59,7 @@ async function loadBooks(idsKey: string, randomCount: number): Promise<Book[]> {
     return found;
   }
 
-  const candidates = await booksApi.searchBooks({
+  const { items: candidates } = await booksApi.searchBooks({
     limit: CANDIDATES_LIMIT,
     offset: 0,
   });

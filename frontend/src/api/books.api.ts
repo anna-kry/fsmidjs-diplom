@@ -11,10 +11,19 @@ export interface SearchBooksParams {
   availableOnly?: boolean;
 }
 
+/** Ответ GET /common/books: страница книг + общее число совпадений. */
+export interface SearchBooksResult {
+  items: Book[];
+  /** Сколько книг вообще подходит под фильтры (для «Найдено: N …»). */
+  total: number;
+}
+
 export const booksApi = {
   /** Публичный поиск книг: фильтры комбинируются, сортировка — на сервере. */
-  async searchBooks(params: SearchBooksParams): Promise<Book[]> {
-    const response = await http.get<Book[]>('/common/books', { params });
+  async searchBooks(params: SearchBooksParams): Promise<SearchBooksResult> {
+    const response = await http.get<SearchBooksResult>('/common/books', {
+      params,
+    });
     return response.data;
   },
 

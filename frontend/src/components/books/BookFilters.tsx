@@ -9,6 +9,11 @@ interface BookFiltersProps {
   onReset: () => void;
   /** Скрыть поле выбора библиотеки (используется на странице книг одной библиотеки). */
   hideLibraryFilter?: boolean;
+  /**
+   * Начальные значения полей — для предзаполнения формы (страница поиска
+   * подставляет сюда фильтры из query-параметров адреса).
+   */
+  initialFilters?: BookFiltersValue;
 }
 
 /**
@@ -25,11 +30,14 @@ const BookFilters = ({
   onApply,
   onReset,
   hideLibraryFilter = false,
+  initialFilters,
 }: BookFiltersProps) => {
-  const [library, setLibrary] = useState('');
-  const [author, setAuthor] = useState('');
-  const [title, setTitle] = useState('');
-  const [availableOnly, setAvailableOnly] = useState(false);
+  const [library, setLibrary] = useState(initialFilters?.library ?? '');
+  const [author, setAuthor] = useState(initialFilters?.author ?? '');
+  const [title, setTitle] = useState(initialFilters?.title ?? '');
+  const [availableOnly, setAvailableOnly] = useState(
+    initialFilters?.availableOnly ?? false,
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -24,6 +24,7 @@ interface QueryBuilderMock {
   skip: jest.Mock;
   take: jest.Mock;
   getMany: jest.Mock;
+  getCount: jest.Mock;
 }
 
 interface BooksRepositoryMock {
@@ -94,6 +95,7 @@ describe('BooksService', () => {
       skip: jest.fn().mockReturnThis(),
       take: jest.fn().mockReturnThis(),
       getMany: jest.fn().mockResolvedValue([]),
+      getCount: jest.fn().mockResolvedValue(0),
     };
     booksRepository = {
       createQueryBuilder: jest.fn().mockReturnValue(queryBuilder),
@@ -127,9 +129,10 @@ describe('BooksService', () => {
   });
 
   describe('findAll: получение списка', () => {
-    it('соединяет библиотеку и возвращает результат запроса', async () => {
+    it('соединяет библиотеку и возвращает книги с общим числом', async () => {
       const books = [createBook()];
       queryBuilder.getMany.mockResolvedValue(books);
+      queryBuilder.getCount.mockResolvedValue(42);
 
       const result = await booksService.findAll({
         library: '',
@@ -144,7 +147,9 @@ describe('BooksService', () => {
         'book.library',
         'library',
       );
-      expect(result).toBe(books);
+      expect(result.books).toBe(books);
+      // total — число всех подходящих книг, а не размер страницы.
+      expect(result.total).toBe(42);
     });
 
     it('применяет пагинацию limit/offset', async () => {

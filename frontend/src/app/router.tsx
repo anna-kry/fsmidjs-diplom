@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
+import BookSearchPage from '../pages/BookSearchPage';
 import BookPage from '../pages/BookPage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
@@ -22,6 +23,7 @@ const AppRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/search" element={<BookSearchPage />} />
       <Route path="/books/:id" element={<BookPage />} />
       <Route
         path="/login"

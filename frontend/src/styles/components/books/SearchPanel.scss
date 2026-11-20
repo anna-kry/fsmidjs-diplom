@@ -1,0 +1,36 @@
+@import '../../variables';
+
+// Карточка блока поиска — общая для главной (HomePage) и страницы
+// результатов поиска (BookSearchPage).
+// По макету (frame 1:1616 «search form»): карточка 732px, внутренний
+// отступ 32px, поля 668px; зелёный фон #d6ead8, чёрная рамка 1px,
+// радиус 32px, тени нет.
+
+.search-panel {
+  display: flex;
+  flex-direction: row;
+  gap: 34px;
+  border: none;
+  background-color: transparent;
+  margin: 60px 0 120px;
+
+  &__img {
+    width: 100%;
+    max-width: 514px;
+  }
+
+  &__card {
+    background: $color-bg-search-card;
+    border: 1px solid $color-border;
+    border-radius: $radius-card;
+    margin-bottom: 16px;
+  }
+
+  &__body {
+    padding: 32px; // внутренний отступ карточки по макету
+  }
+
+  &__retry {
+    margin-bottom: 1rem; // mb-3
+  }
+}

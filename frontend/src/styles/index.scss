@@ -12,6 +12,7 @@
 @import './components/users/UsersFilters';
 @import './components/users/CreateUserForm';
 @import './components/books/BookFilters';
+@import './components/books/SearchPanel';
 @import './components/common/Pagination';
 @import './components/common/Loader';
 @import './components/common/Map';
@@ -20,6 +21,7 @@
 @import './pages/RegisterPage';
 @import './pages/NotFoundPage';
 @import './pages/HomePage';
+@import './pages/BookSearchPage';
 @import './pages/ManagerUsersPage';
 @import './pages/AdminUsersPage';
 @import './pages/AdminLibrariesPage';

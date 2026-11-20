@@ -1,0 +1,67 @@
+@import '../variables';
+
+// Страница результатов поиска /search:
+// макет Figma 1:2441 (выдача) и 1:2899 (пустая выдача).
+// Карточка формы — общий класс search-panel, см. components/books/SearchPanel.scss.
+
+.search-page {
+  // «Найдено: 4 книги» — жирный заголовок над сеткой карточек.
+  &__found {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 1.5rem; // mb-4
+  }
+
+  &__retry {
+    margin-bottom: 1rem; // mb-3
+  }
+
+  // Сетка карточек: 1 колонка на телефоне, 2 на планшете,
+  // 3 на ноутбуке, 4 на широком экране (как на главной).
+  &__grid {
+    display: grid;
+    gap: 1rem; // g-3
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(2, 1fr); // col-sm-6
+    }
+    @media (min-width: 992px) {
+      grid-template-columns: repeat(3, 1fr); // col-lg-4
+    }
+    @media (min-width: 1200px) {
+      grid-template-columns: repeat(3, 1fr); // col-xl-3
+    }
+  }
+
+  &__book-cell {
+    width: 100%; // col-12
+  }
+
+  // Пустая выдача (макет 1:2899): крупный заголовок по центру
+  // и абзац под ним в колонке ~490px.
+  &__empty {
+    text-align: center;
+    padding: 60px 0 120px;
+  }
+
+  &__empty-title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 36px; // как заголовок «О нас» на главной
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 32px;
+  }
+
+  &__empty-text {
+    font-family: $font-family;
+    font-size: 16px;
+    line-height: 1.5;
+    color: $color-text;
+    max-width: 490px; // колонка текста по макету
+    margin: 0 auto; // блок по центру
+    text-align: left; // строки прижаты влево, как в макете
+  }
+}

@@ -430,11 +430,12 @@ describe('День 3: библиотеки и книги', () => {
       expect(res.body).toEqual([]);
     });
 
-    it('гость GET /api/common/books: 200 и массив', async () => {
+    it('гость GET /api/common/books: 200, items и total', async () => {
       const res = await server.get('/api/common/books');
 
       expect(res.status).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
+      expect(Array.isArray(res.body.items)).toBe(true);
+      expect(typeof res.body.total).toBe('number');
     });
   });
 
@@ -691,9 +692,9 @@ describe('День 3: библиотеки и книги', () => {
         .query({ title: 'пр', availableOnly: 'true' });
 
       expect(res.status).toBe(200);
-      expect(res.body.length).toBeGreaterThanOrEqual(1);
+      expect(res.body.items.length).toBeGreaterThanOrEqual(1);
 
-      for (const book of res.body) {
+      for (const book of res.body.items) {
         expect(book.title.toLowerCase()).toContain('пр');
         expect(book.library).toEqual({
           id: expect.any(Number),
@@ -702,9 +703,11 @@ describe('День 3: библиотеки и книги', () => {
         });
       }
 
-      const titles = res.body.map((book: { title: string }) => book.title);
+      const titles = res.body.items.map((book: { title: string }) => book.title);
       expect(titles).toContain('Преступление и наказание');
       expect(titles).not.toContain('Война и мир');
+      // total — общее число совпадений, а не размер страницы.
+      expect(res.body.total).toBeGreaterThanOrEqual(res.body.items.length);
     });
 
     it('фильтр по id библиотеки', async () => {
@@ -713,8 +716,8 @@ describe('День 3: библиотеки и книги', () => {
         .query({ library: String(secondLibraryId) });
 
       expect(res.status).toBe(200);
-      expect(res.body.length).toBeGreaterThanOrEqual(1);
-      for (const book of res.body) {
+      expect(res.body.items.length).toBeGreaterThanOrEqual(1);
+      for (const book of res.body.items) {
         expect(book.library.id).toBe(secondLibraryId);
       }
     });
@@ -725,8 +728,8 @@ describe('День 3: библиотеки и книги', () => {
         .query({ library: 'Дня 3' });
 
       expect(res.status).toBe(200);
-      expect(res.body.length).toBeGreaterThanOrEqual(1);
-      for (const book of res.body) {
+      expect(res.body.items.length).toBeGreaterThanOrEqual(1);
+      for (const book of res.body.items) {
         expect(book.library.id).toBe(libraryId);
       }
     });
@@ -737,8 +740,9 @@ describe('День 3: библиотеки и книги', () => {
         .query({ author: 'ТОЛСТОЙ' });
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0].title).toBe('Война и мир');
+      expect(res.body.items).toHaveLength(1);
+      expect(res.body.total).toBe(1);
+      expect(res.body.items[0].title).toBe('Война и мир');
     });
 
     it('комбинация фильтров одновременно', async () => {
@@ -749,17 +753,18 @@ describe('День 3: библиотеки и книги', () => {
       });
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0].title).toBe('Преступление и наказание');
+      expect(res.body.items).toHaveLength(1);
+      expect(res.body.items[0].title).toBe('Преступление и наказание');
     });
 
-    it('пустой результат: 200 и пустой массив', async () => {
+    it('пустой результат: 200, пустые items и total=0', async () => {
       const res = await server
         .get('/api/common/books')
         .query({ title: 'книга-которой-нет-xyz' });
 
       expect(res.status).toBe(200);
-      expect(res.body).toEqual([]);
+      expect(res.body.items).toEqual([]);
+      expect(res.body.total).toBe(0);
     });
 
     it('пагинация limit=1&offset=0 и offset=1: разные книги', async () => {
@@ -767,10 +772,12 @@ describe('День 3: библиотеки и книги', () => {
       const second = await server.get('/api/common/books?limit=1&offset=1');
 
       expect(first.status).toBe(200);
-      expect(first.body).toHaveLength(1);
+      expect(first.body.items).toHaveLength(1);
       expect(second.status).toBe(200);
-      expect(second.body).toHaveLength(1);
-      expect(second.body[0].id).not.toBe(first.body[0].id);
+      expect(second.body.items).toHaveLength(1);
+      expect(second.body.items[0].id).not.toBe(first.body.items[0].id);
+      // При limit=1 total всё равно равен общему числу совпадений.
+      expect(first.body.total).toBeGreaterThan(1);
     });
 
     it('некорректный limit: 400', async () => {
@@ -869,7 +876,7 @@ describe('День 3: библиотеки и книги', () => {
       const before = await server
         .get('/api/common/books')
         .query({ library: String(libraryId) });
-      expect(before.body.length).toBeGreaterThanOrEqual(1);
+      expect(before.body.items.length).toBeGreaterThanOrEqual(1);
 
       const res = await day3Admin.delete(`/api/admin/libraries/${libraryId}`);
       expect(res.status).toBe(200);
@@ -877,9 +884,10 @@ describe('День 3: библиотеки и книги', () => {
       const after = await server
         .get('/api/common/books')
         .query({ library: String(libraryId) });
-      expect(after.body).toEqual([]);
+      expect(after.body.items).toEqual([]);
+      expect(after.body.total).toBe(0);
 
-      for (const book of before.body as Array<{ id: number }>) {
+      for (const book of before.body.items as Array<{ id: number }>) {
         await server.get(`/api/common/books/${book.id}`).expect(404);
       }
     });
@@ -898,8 +906,8 @@ describe('День 3: библиотеки и книги', () => {
       expect(libraries.body[0].id).toBe(secondLibraryId);
 
       const books = await server.get('/api/common/books');
-      expect(books.body).toHaveLength(1);
-      expect(books.body[0].title).toBe('Война и мир');
+      expect(books.body.items).toHaveLength(1);
+      expect(books.body.items[0].title).toBe('Война и мир');
     });
   });
 });

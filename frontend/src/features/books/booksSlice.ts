@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { booksApi, type SearchBooksParams } from '../../api/books.api';
+import {
+  booksApi,
+  type SearchBooksParams,
+  type SearchBooksResult,
+} from '../../api/books.api';
 import { getApiErrorMessage } from '../../api/error';
 import type {
   Book,
@@ -9,6 +13,8 @@ import type {
 
 export interface BooksState {
   items: Book[];
+  /** Общее число книг из последнего поиска (для «Найдено: N …»). */
+  total: number;
   loading: boolean;
   error: string | null;
   requestId: string | null;
@@ -22,6 +28,7 @@ export interface BooksState {
 
 const initialState: BooksState = {
   items: [],
+  total: 0,
   loading: false,
   error: null,
   requestId: null,
@@ -35,7 +42,7 @@ const initialState: BooksState = {
 
 /** Публичный поиск книг с фильтрами и пагинацией. */
 export const searchBooks = createAsyncThunk<
-  Book[],
+  SearchBooksResult,
   SearchBooksParams,
   { rejectValue: string }
 >('books/searchBooks', async (params, { rejectWithValue }) => {
@@ -125,7 +132,8 @@ const booksSlice = createSlice({
         if (state.requestId !== action.meta.requestId) {
           return;
         }
-        state.items = action.payload;
+        state.items = action.payload.items;
+        state.total = action.payload.total;
         state.loading = false;
       })
       .addCase(searchBooks.rejected, (state, action) => {

@@ -11,8 +11,9 @@ export class CommonBooksController {
 
   @Get()
   async findAll(@Query() query: SearchBooksQueryDto) {
-    const books = await this.booksService.findAll(query);
-    return books.map(toBookResponse);
+    const { books, total } = await this.booksService.findAll(query);
+    // items — страница книг, total — общее число совпадений (для «Найдено: N»).
+    return { items: books.map(toBookResponse), total };
   }
 
   @Get(':id')

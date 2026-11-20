@@ -33,6 +33,13 @@ export interface SearchBooksParams {
   offset: number;
 }
 
+/** Результат поиска: страница книг + общее число подходящих записей. */
+export interface SearchBooksResult {
+  books: Book[];
+  /** Сколько книг подходит под фильтры всего (без учёта limit/offset). */
+  total: number;
+}
+
 /**
  * Книги: публичный поиск с фильтрами и административный CRUD.
  *
@@ -57,7 +64,7 @@ export class BooksService {
     return this.configService.get<string>('app.uploads.dir');
   }
 
-  async findAll(params: SearchBooksParams): Promise<Book[]> {
+  async findAll(params: SearchBooksParams): Promise<SearchBooksResult> {
     const query = this.booksRepository
       .createQueryBuilder('book')
       .leftJoinAndSelect('book.library', 'library');
@@ -90,11 +97,17 @@ export class BooksService {
       query.andWhere('book.availableCopies > 0');
     }
 
+    // Общее число найденных книг для заголовка «Найдено: N …».
+    // getCount() выполняет запрос на клоне и сам сбрасывает skip/take,
+    // поэтому total не зависит от пагинации.
+    const total = await query.getCount();
+
     query.orderBy('book.id', 'ASC');
     query.skip(params.offset);
     query.take(params.limit);
 
-    return query.getMany();
+    const books = await query.getMany();
+    return { books, total };
   }
 
   async findById(id: ID): Promise<Book> {
