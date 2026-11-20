@@ -1,0 +1,33 @@
+@import '../variables';
+
+// Страница «Мои брони»: /user/rentals (роль client).
+
+.my-rentals {
+  &__heading {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 1.5rem; // mb-4
+  }
+
+  // Пустой список: текст по центру и кнопка поиска книг.
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 1rem; // py-5
+    text-align: center;
+  }
+
+  &__empty-message {
+    font-family: $font-family;
+    font-size: 16px;
+    line-height: 1.5;
+    color: $color-text;
+    margin: 0;
+    max-width: 490px; // колонка текста, как в пустом состоянии поиска
+  }
+}

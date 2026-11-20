@@ -14,6 +14,8 @@ interface ConfirmModalProps {
   message?: ReactNode;
   /** Текст кнопки подтверждения. */
   confirmLabel?: string;
+  /** Текст кнопки во время загрузки (по умолчанию — как при удалении). */
+  loadingLabel?: string;
   /** Состояние загрузки при подтверждении. */
   loading?: boolean;
 }
@@ -29,6 +31,7 @@ const ConfirmModal = ({
   title = 'Подтверждение',
   message,
   confirmLabel = 'Подтвердить',
+  loadingLabel = 'Удаление…',
   loading = false,
 }: ConfirmModalProps) => {
   return (
@@ -50,7 +53,7 @@ const ConfirmModal = ({
           onClick={onConfirm}
           disabled={loading}
         >
-          {loading ? 'Удаление…' : confirmLabel}
+          {loading ? loadingLabel : confirmLabel}
         </Button>
       </Modal.Footer>
     </Modal>

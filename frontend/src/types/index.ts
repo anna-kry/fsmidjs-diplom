@@ -111,17 +111,24 @@ export interface UpdateBookInput {
 
 export type RentalStatus = 'reserved' | 'active' | 'completed' | 'cancelled';
 
+/**
+ * Аренда из API (раздел 6.4): поля брони + связанные сущности.
+ * В списке книга и библиотека приходят вместе; `user` добавляет только
+ * ответ менеджера. API возвращает `null` для отсутствующей связи,
+ * поэтому у типов разрешено и `null`, и отсутствие поля.
+ */
 export interface BookRental {
   id: ID;
   userId: ID;
   libraryId: ID;
   bookId: ID;
+  /** Даты в формате YYYY-MM-DD. */
   dateStart: string;
   dateEnd: string;
   status: RentalStatus;
-  book?: { id: ID; title: string; author: string };
-  library?: { id: ID; name: string };
-  user?: { id: ID; name: string; email: string };
+  book?: { id: ID; title: string; author: string } | null;
+  library?: { id: ID; name: string } | null;
+  user?: { id: ID; name: string; email: string } | null;
 }
 
 export interface SupportRequest {

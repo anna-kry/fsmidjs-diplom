@@ -14,7 +14,7 @@ const SOCIALS = [
  */
 const Footer = () => {
   return (
-    <footer className="footer">
+    <footer className="footer" id="footer">
       <img className="footer__blob footer__blob--left" src="/footer/blob-left.svg" alt="" aria-hidden="true" />
       <img className="footer__blob footer__blob--right" src="/footer/blob-right.svg" alt="" aria-hidden="true" />
 

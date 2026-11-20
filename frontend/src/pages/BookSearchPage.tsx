@@ -11,6 +11,7 @@ import { searchBooks } from '../features/books/booksSlice';
 import { fetchLibraries } from '../features/libraries/librariesSlice';
 import { buildSearchQuery, parseSearchQuery } from '../utils/searchQuery';
 import type { BookFilters as BookFiltersValue } from '../types';
+import searchImage from '../img/searchform-search.png';
 
 const PAGE_SIZE = 12;
 /** Библиотек для фильтра немного — забираем одним запросом. */
@@ -117,6 +118,7 @@ const BookSearchPage = () => {
         onApply={handleApply}
         onReset={handleReset}
         initialFilters={filters}
+        image={searchImage}
       />
 
       {loading ? (

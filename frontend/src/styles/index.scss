@@ -1,5 +1,5 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 @import './variables';
 @import './global';
@@ -17,6 +17,9 @@
 @import './components/common/Loader';
 @import './components/common/Map';
 @import './components/users/UsersTable';
+@import './components/rentals/RentalsTable';
+@import './components/rentals/RentalsFilters';
+@import './components/books/RentalForm';
 @import './pages/LoginPage';
 @import './pages/RegisterPage';
 @import './pages/NotFoundPage';
@@ -27,6 +30,8 @@
 @import './pages/AdminLibrariesPage';
 @import './pages/AdminBooksPage';
 @import './pages/BookPage';
+@import './pages/MyRentalsPage';
+@import './pages/ManagerRentalsPage';
 
 body {
   margin: 0;

@@ -1,8 +1,9 @@
 import { useCallback, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import ErrorAlert from '../components/common/ErrorAlert';
 import Loader from '../components/common/Loader';
+import RentalForm from '../components/books/RentalForm';
 import { fetchBook } from '../features/books/booksSlice';
 import type { Book } from '../types';
 
@@ -11,6 +12,7 @@ const BookPage = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const { items: books, loading, error } = useAppSelector((state) => state.books);
+  const user = useAppSelector((state) => state.auth.user);
 
   const bookId = id ? Number(id) : NaN;
   const book = books.find((item: Book) => item.id === bookId);
@@ -104,6 +106,29 @@ const BookPage = () => {
                   </span>
                 </div>
               </div>
+
+              {/* Бронирование: форма у клиента, подсказка о входе у гостя.
+                  Админ и менеджер бронировать не могут — им форма не нужна. */}
+              {!user && (
+                <div className="book-page__booking-hint">
+                  <p className="book-page__message">
+                    Войдите, чтобы забронировать книгу.
+                  </p>
+                  <Link to="/login" className="btn btn-primary">
+                    Войти
+                  </Link>
+                </div>
+              )}
+              {user?.role === 'client' &&
+                (book.library ? (
+                  <RentalForm book={book} />
+                ) : (
+                  <div className="book-page__booking-hint">
+                    <p className="book-page__message">
+                      У книги не указана библиотека — бронирование недоступно.
+                    </p>
+                  </div>
+                ))}
             </>
           )}
         </div>

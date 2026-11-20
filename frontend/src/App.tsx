@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from './app/store';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import { fetchMe } from './features/auth/authSlice';
-import Layout from './components/layout/Layout';
+
 import Loader from './components/common/Loader';
 import AppRouter from './app/router';
 
@@ -24,9 +24,9 @@ const AppContent = () => {
   }
 
   return (
-    <Layout>
+
       <AppRouter />
-    </Layout>
+
   );
 };
 

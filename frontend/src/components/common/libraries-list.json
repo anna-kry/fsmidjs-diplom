@@ -44056,34 +44056,34 @@
     "WorkingHours": [
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
-    "ClarificationOfWorkingHours": "Закрыто на капитальный ремонт",
+    "ClarificationOfWorkingHours": "выходной на капитальный ремонт",
     "WebSite": "культуразао.рф",
     "NumOfSeats": 32,
     "NumOfReaders": 2751,
@@ -60510,7 +60510,7 @@
         "WorkHours": "10:00-20:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Молодежный и детский сектора - с 12.00 - 20.00; последний вторник каждого месяца - санитарный день (закрыто для посещения). Последний вторник каждого месяца - санитарный день.",
+    "ClarificationOfWorkingHours": "Молодежный и детский сектора - с 12.00 - 20.00; последний вторник каждого месяца - санитарный день (выходной для посещения). Последний вторник каждого месяца - санитарный день.",
     "WebSite": "pushkinmoslib.ru",
     "NumOfSeats": 57,
     "NumOfReaders": 827,
@@ -61765,7 +61765,7 @@
         "WorkHours": "12:00-22:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Отделение по адресу ул. Профсоюзная. д. 115. корп. 1 закрыто на ремонт",
+    "ClarificationOfWorkingHours": "Отделение по адресу ул. Профсоюзная. д. 115. корп. 1 выходной на ремонт",
     "WebSite": "kulturauzao.ru",
     "NumOfSeats": 60,
     "NumOfReaders": 8088,
@@ -62482,31 +62482,31 @@
     "WorkingHours": [
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
     "ClarificationOfWorkingHours": "Последний вторник месяца – санитарный день.",
@@ -99991,31 +99991,31 @@
     "WorkingHours": [
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
     "ClarificationOfWorkingHours": "Библиотека закрыта в связи с аварийным состоянием.",
@@ -103395,7 +103395,7 @@
         "WorkHours": "12:00-20:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Последний вторник месяца - санитарный день. График работы по адресу Сумской проезд д.3. кв. 1 - закрыто.",
+    "ClarificationOfWorkingHours": "Последний вторник месяца - санитарный день. График работы по адресу Сумской проезд д.3. кв. 1 - выходной.",
     "WebSite": "kulturauao.ru",
     "NumOfSeats": 800,
     "NumOfReaders": 76900,
@@ -139818,7 +139818,7 @@
     "WorkingHours": [
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
@@ -139845,7 +139845,7 @@
         "WorkHours": "12:00-20:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Последний вторник месяца - санитарный день. График работы по адресу ул. Подольских курсантов. д.14. корп.1: закрыто на ремонт.",
+    "ClarificationOfWorkingHours": "Последний вторник месяца - санитарный день. График работы по адресу ул. Подольских курсантов. д.14. корп.1: выходной на ремонт.",
     "WebSite": "kulturauao.ru",
     "NumOfSeats": null,
     "NumOfReaders": null,
@@ -180535,7 +180535,7 @@
         "WorkHours": "12:00-20:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Санитарный день - последний вторник месяца. Открытое шоссе. д.24. корп.13: закрыто на ремонт.",
+    "ClarificationOfWorkingHours": "Санитарный день - последний вторник месяца. Открытое шоссе. д.24. корп.13: выходной на ремонт.",
     "WebSite": "культура-и-спорт-вао.рф",
     "NumOfSeats": 10,
     "NumOfReaders": 712,
@@ -206370,34 +206370,34 @@
     "WorkingHours": [
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
-    "ClarificationOfWorkingHours": "Закрыто на капитальный ремонт",
+    "ClarificationOfWorkingHours": "выходной на капитальный ремонт",
     "WebSite": "культурасвао.рф",
     "NumOfSeats": null,
     "NumOfReaders": 2165,
@@ -218011,7 +218011,7 @@
         "WorkHours": "12:00-22:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Помещение по адресу: Вокзальная пл..д.2.стр.2 - закрыто на ремонт. Последний вторник месяца санитарный день.",
+    "ClarificationOfWorkingHours": "Помещение по адресу: Вокзальная пл..д.2.стр.2 - выходной на ремонт. Последний вторник месяца санитарный день.",
     "WebSite": "kulturauzao.ru",
     "NumOfSeats": 15,
     "NumOfReaders": 4126,
@@ -245574,31 +245574,31 @@
     "WorkingHours": [
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
     "ClarificationOfWorkingHours": "Библиотека закрыта на капитальный ремонт. Обслуживание населения ведется в помещении ОСП \"КЦ \"Северный\". Санитарный день - последний вторник месяца.",
@@ -256996,7 +256996,7 @@
         "WorkHours": "выходной"
       }
     ],
-    "ClarificationOfWorkingHours": "Последный вторник месяца - санитарный день. По адресу улица Кировоградская. дом 44. корпус 2 - вт-чт. 15:00-19:00. сб. вс. пн - выходной. По адресу Чертановская ул.. дом 52. корп. 2 - закрыто.",
+    "ClarificationOfWorkingHours": "Последный вторник месяца - санитарный день. По адресу улица Кировоградская. дом 44. корпус 2 - вт-чт. 15:00-19:00. сб. вс. пн - выходной. По адресу Чертановская ул.. дом 52. корп. 2 - выходной.",
     "WebSite": "kulturauao.ru",
     "NumOfSeats": 24,
     "NumOfReaders": 6972,
@@ -262349,31 +262349,31 @@
     "WorkingHours": [
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
     "ClarificationOfWorkingHours": "С 3 августа 2026 г. библиотека закрыта для обслуживания пользователей",
@@ -296148,34 +296148,34 @@
     "WorkingHours": [
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
-    "ClarificationOfWorkingHours": "Закрыто",
+    "ClarificationOfWorkingHours": "выходной",
     "WebSite": "kulturauao.ru",
     "NumOfSeats": null,
     "NumOfReaders": null,
@@ -333069,34 +333069,34 @@
     "WorkingHours": [
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
-    "ClarificationOfWorkingHours": "Закрыто",
+    "ClarificationOfWorkingHours": "выходной",
     "WebSite": "kulturauao.ru",
     "NumOfSeats": 37,
     "NumOfReaders": 1443,
@@ -337681,7 +337681,7 @@
         "WorkHours": "12:00-20:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Закрыто на ремонт",
+    "ClarificationOfWorkingHours": "выходной на ремонт",
     "WebSite": "kulturasao.ru",
     "NumOfSeats": 24,
     "NumOfReaders": 613,
@@ -354284,7 +354284,7 @@
         "WorkHours": "12:00-21:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Санитарный день - последний вторник месяца. Режим работы библиотеки по адресу ул. Полярная. д. 15. корп.1: закрыто на ремонт",
+    "ClarificationOfWorkingHours": "Санитарный день - последний вторник месяца. Режим работы библиотеки по адресу ул. Полярная. д. 15. корп.1: выходной на ремонт",
     "WebSite": "культурасвао.рф",
     "NumOfSeats": 63,
     "NumOfReaders": 5711,
@@ -366930,7 +366930,7 @@
         "WorkHours": "12:00-20:00"
       }
     ],
-    "ClarificationOfWorkingHours": "Последний вторник месяца - санитарный день. Библиотека по адресу Коломенская набережная. д.6.. к.1. закрыто.",
+    "ClarificationOfWorkingHours": "Последний вторник месяца - санитарный день. Библиотека по адресу Коломенская набережная. д.6.. к.1. выходной.",
     "WebSite": "kulturauao.ru",
     "NumOfSeats": 45,
     "NumOfReaders": 7674,
@@ -376754,34 +376754,34 @@
     "WorkingHours": [
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
-    "ClarificationOfWorkingHours": "Закрыто",
+    "ClarificationOfWorkingHours": "выходной",
     "WebSite": "kulturauao.ru",
     "NumOfSeats": 42,
     "NumOfReaders": 3472,
@@ -440971,31 +440971,31 @@
     "WorkingHours": [
       {
         "DayWeek": "пятница",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "суббота",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "воскресенье",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "понедельник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "четверг",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "среда",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       },
       {
         "DayWeek": "вторник",
-        "WorkHours": "закрыто"
+        "WorkHours": "выходной"
       }
     ],
     "ClarificationOfWorkingHours": "Библиотека закрыта на капитальный ремонт",

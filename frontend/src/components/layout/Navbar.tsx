@@ -73,10 +73,10 @@ const LayoutNavbar = () => {
 
         {/* Справа: якоря навигации */}
         <nav className="navbar-app__right">
-          <Link to="#" className="navbar-app__anchor">
-            Библиотеки
+          <Link to="/" className="navbar-app__anchor">
+            На главную
           </Link>
-          <Link to="#about" className="navbar-app__anchor">
+          <Link to="/#about" className="navbar-app__anchor">
             О нас
           </Link>
           <Link to="#footer" className="navbar-app__anchor">

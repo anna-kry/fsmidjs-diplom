@@ -3,17 +3,20 @@
 // Страница 404
 
 .not-found {
-  background: $color-bg-popup;
+  // background: $color-bg-popup;
   min-height: 100vh;
+  width: 100%;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
+  align-self: right;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 2rem 1rem;
   box-sizing: border-box;
 
-  &__title {
+  &__text {
     font-family: $font-family;
     font-weight: 600;
     font-size: 32px;
@@ -23,25 +26,33 @@
 
   &__code {
     font-family: $font-family;
-    font-weight: 600;
-    font-size: 120px;
+    font-weight: 800;
+    font-size: 220px;
     color: $color-success-green;
     margin: 0;
     line-height: 1;
+
+    text-shadow: 
+      -1px -1px 0 #000000,  
+      1px -1px 0 #000000,
+      -1px  1px 0 #000000,
+      1px  1px 0 #000000;
+
+    letter-spacing: 6%;
   }
 
-  &__subtitle {
-    font-family: $font-family;
-    font-weight: 400;
-    font-size: 18px;
-    color: $color-text;
-    margin: 16px 0 32px;
-  }
+    a {
+      text-decoration: none;
+    }
 
-  &__books {
-    font-size: 120px;
-    line-height: 1;
-    margin-bottom: 32px;
-    opacity: 0.6;
-  }
+}
+
+
+#root:has(.not-found) {
+  background: url('../../img/404.jpg') no-repeat center center / cover;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0 10%;
+
 }

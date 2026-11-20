@@ -73,16 +73,17 @@
     user-select: none;
 
     &--left {
-      left: 0;
-      bottom: 0;
-      width: 300px;
+      left: -52px;
+      bottom: -40px;
+      width: 662px;
       height: auto;
     }
 
     &--right {
-      right: 0;
-      bottom: 0;
-      width: 220px;
+      transform: scaleX(-1);
+      right: -156px;
+      top: -48px;
+      width: 662px;
       height: auto;
     }
   }

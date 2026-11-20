@@ -87,6 +87,22 @@ const MENU_ITEMS: Record<UserRole, UserMenuItem[]> = {
       ),
     },
     {
+      to: '/manager/users',
+      label: 'Пользователи',
+      roles: ['manager'],
+      icon: (
+        <path d="M12 3L1 9l11 6 9-4 9 4-9-2z" />
+      ),
+    },
+    {
+      to: '/manager/rentals',
+      label: 'Книги',
+      roles: ['manager'],
+      icon: (
+        <path d="M12 3L1 9l11 6 9-4 9 4-9-2z" />
+      ),
+    },    
+    {
       to: '/manager/settings',
       label: 'Настройки',
       roles: ['manager'],
@@ -103,6 +119,17 @@ const MENU_ITEMS: Record<UserRole, UserMenuItem[]> = {
       roles: ['client'],
       icon: (
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      ),
+    },
+    {
+      to: '/user/rentals',
+      label: 'Мои брони',
+      roles: ['client'],
+      icon: (
+        <>
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </>
       ),
     },
     {
@@ -126,7 +153,10 @@ const MENU_PATHS = [
   '/admin/books',
   '/admin/settings',
   '/manager/settings',
+  '/manager/users',
+  '/manager/rentals',
   '/user/settings',
+  '/user/rentals',
 ];
 
 /**

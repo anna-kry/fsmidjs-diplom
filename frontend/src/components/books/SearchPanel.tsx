@@ -3,7 +3,8 @@ import type { BookFilters as BookFiltersValue, Library } from '../../types';
 import ErrorAlert from '../common/ErrorAlert';
 import Loader from '../common/Loader';
 import BookFilters from './BookFilters';
-import searchImage from '../../img/search-hp.png';
+
+
 
 interface SearchPanelProps {
   /** Библиотеки для выпадающего фильтра (загружаются из API). */
@@ -21,6 +22,7 @@ interface SearchPanelProps {
    * фильтры из query-параметров адреса — форма открывается предзаполненной.
    */
   initialFilters?: BookFiltersValue;
+  image: string;
 }
 
 /**
@@ -37,6 +39,7 @@ const SearchPanel = ({
   onApply,
   onReset,
   initialFilters,
+  image,
 }: SearchPanelProps) => (
   <Card className="search-panel">
     <Card.Body className="search-panel__body search-panel__card">
@@ -66,7 +69,7 @@ const SearchPanel = ({
     </Card.Body>
     <img
       className="search-panel__img"
-      src={searchImage}
+      src={image}
       alt="Иллюстрация"
     />
   </Card>

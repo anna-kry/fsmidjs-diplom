@@ -7,6 +7,7 @@ import Map from '../components/common/Map';
 import { fetchLibraries } from '../features/libraries/librariesSlice';
 import { buildSearchQuery } from '../utils/searchQuery';
 import type { BookFilters as BookFiltersValue } from '../types';
+import searchImage from '../img/searchform-main.png';
 
 /** Библиотек для фильтра немного — забираем одним запросом. */
 const LIBRARIES_LIMIT = 100;
@@ -59,6 +60,7 @@ const HomePage = () => {
         onRetry={loadLibraries}
         onApply={handleApply}
         onReset={handleReset}
+        image={searchImage}
       />
 
       {/* Первый экземпляр свайпера — под поиском */}
