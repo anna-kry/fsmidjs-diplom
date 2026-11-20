@@ -7,6 +7,7 @@ import RegisterPage from '../pages/RegisterPage';
 import MyRentalsPage from '../pages/MyRentalsPage';
 import SupportPage from '../pages/SupportPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import PrivacyPolicyPage from '../pages/PrivacyPolicyPage';
 import AdminLibrariesPage from '../pages/admin/AdminLibrariesPage';
 import AdminBooksPage from '../pages/admin/AdminBooksPage';
 import AdminUsersPage from '../pages/admin/AdminUsersPage';
@@ -25,6 +26,7 @@ const AppRouter = () => {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/search" element={<BookSearchPage />} />
         <Route path="/books/:id" element={<BookPage />} />
         <Route

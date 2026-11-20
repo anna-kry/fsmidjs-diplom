@@ -35,7 +35,7 @@ const Footer = () => {
           ))}
         </div>
 
-        <Link className="footer__policy" to="/">
+        <Link className="footer__policy" to="/privacy">
           Политика конфиденциальности
         </Link>
       </div>

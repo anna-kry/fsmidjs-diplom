@@ -1,0 +1,18 @@
+@import '../variables';
+
+.privacy-policy {
+  max-width: 900px;
+  margin: 0 auto;
+
+  &__text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: $font-family;
+    font-size: 14px;
+    line-height: 1.6;
+    color: $color-text;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+}
