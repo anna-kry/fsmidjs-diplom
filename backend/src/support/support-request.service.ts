@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Repository } from 'typeorm';
@@ -21,12 +21,13 @@ export class SupportRequestService {
     isActive: boolean;
     recipient?: 'client' | 'employee';
   }): Promise<SupportRequest[]> {
-    const where: any = { isActive: params.isActive };
+    const where: { isActive: boolean; userId?: ID } = { isActive: params.isActive };
     if (params.user !== null) {
       where.userId = params.user;
     }
     const requests = await this.supportRequestRepository.find({
       where,
+      relations: ['user'],
       order: { createdAt: 'DESC' },
     });
     for (const request of requests) {
@@ -59,10 +60,11 @@ export class SupportRequestService {
     const request = await this.supportRequestRepository.findOne({ where: { id: supportRequest } });
     if (!request) throw new NotFoundException('Обращение не найдено');
     if (!isEmployee && currentUserId && request.userId !== currentUserId) {
-      throw new NotFoundException('Обращение не найдено');
+      throw new ForbiddenException('Нет доступа к обращению');
     }
     return this.messageRepository.find({
       where: { supportRequestId: supportRequest },
+      relations: ['author'],
       order: { sentAt: 'ASC' },
     });
   }
@@ -77,9 +79,9 @@ export class SupportRequestService {
       where: { id: data.supportRequest },
     });
     if (!request) throw new NotFoundException('Обращение не найдено');
-    if (!request.isActive) throw new Error('Обращение закрыто');
+    if (!request.isActive) throw new BadRequestException('Обращение закрыто');
     if (!data.isEmployee && request.userId !== data.author) {
-      throw new Error('Нет доступа к обращению');
+      throw new ForbiddenException('Нет доступа к обращению');
     }
     const message = this.messageRepository.create({
       supportRequestId: data.supportRequest,

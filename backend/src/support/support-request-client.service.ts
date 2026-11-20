@@ -56,19 +56,12 @@ export class SupportRequestClientService {
       where: { id: supportRequest },
     });
     if (!request) return 0;
-    return this.messageRepository.count({
-      where: {
-        supportRequestId: supportRequest,
-        readAt: null as any,
-      },
-    }).then((total) => {
-      // unread from non-client (employee) side: exclude client's own messages
-      return this.messageRepository
-        .createQueryBuilder('m')
-        .where('m.supportRequestId = :id', { id: supportRequest })
-        .andWhere('m.readAt IS NULL')
-        .andWhere('m.authorId != :userId', { userId: request.userId })
-        .getCount();
-    });
+    // unread from non-client (employee) side: exclude client's own messages
+    return this.messageRepository
+      .createQueryBuilder('m')
+      .where('m.supportRequestId = :id', { id: supportRequest })
+      .andWhere('m.readAt IS NULL')
+      .andWhere('m.authorId != :userId', { userId: request.userId })
+      .getCount();
   }
 }
