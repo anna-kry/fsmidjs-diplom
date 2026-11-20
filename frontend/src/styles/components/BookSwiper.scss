@@ -1,9 +1,12 @@
 @import '../variables';
 
 // Слайдер книг (компонент BookSwiper, библиотека Swiper).
-// Стили карточки внутри слайдера ориентированы на блок «Новые поступления» из макета Figma (node 1:824).
+// Стили карточки внутри слайдера ориентированы на блок «Новые поступления» из макета Figma (node 1:824),
+// расположение стрелок — на блок «slider arrows» (node 1:825): под слайдером, справа внизу.
 
 .book-swiper {
+  // Контейнер для абсолютно позиционированных стрелок (см. &__slider).
+  position: relative;
   margin-bottom: 32px;
 
   &__title {
@@ -18,22 +21,34 @@
   &__slider {
     // Размер стрелок задаётся CSS-переменной Swiper.
     --swiper-navigation-size: 40px;
+    // Расстояние между стрелками (в макете блок «slider arrows» шириной 96px = 40 + 16 + 40).
+    --swiper-navigation-gap: 16px;
+
+    // Место под стрелки под слайдером: 40px отступ от карточек (как в макете)
+    // + высота стрелок − высота строки точек пагинации (12px отступ + 10px точки).
+    padding-bottom: calc(40px + var(--swiper-navigation-size) - 22px);
 
     // Стрелки в стиле макета «Новые поступления»:
     // жёлтый фон (#ffc33e), чёрная обводка, тень 2px 2px 0px, скругление 20px, иконка 24px.
-    .swiper-button-prev,
-    .swiper-button-next {
-      width: 40px;
-      height: 40px;
+    // Позиционируются по нижнему краю секции .book-swiper, поэтому лежат под слайдером
+    // и не обрезаются его overflow: hidden. Правый край стрелок совпадает с правым краем слайдера.
+    &.swiper .swiper-button-prev,
+    &.swiper .swiper-button-next {
+      top: auto;
+      bottom: 0;
+      margin-top: 0;
+      width: var(--swiper-navigation-size);
+      height: var(--swiper-navigation-size);
       background: $color-button-primary;
       border: 1px solid $color-border;
       border-radius: 20px;
       box-shadow: 2px 2px 0px $color-border;
       transition: transform 0.15s ease;
 
+      // Иконка 24px для стрелки 40px — 60% от размера кнопки.
       svg {
-        width: 24px;
-        height: 24px;
+        width: 60%;
+        height: 60%;
       }
 
       &:hover {
@@ -45,10 +60,24 @@
       }
     }
 
+    &.swiper .swiper-button-prev {
+      left: auto;
+      right: calc(var(--swiper-navigation-size) + var(--swiper-navigation-gap));
+    }
+
+    &.swiper .swiper-button-next {
+      left: auto;
+      right: 0;
+    }
+
     // Точки пагинации — под слайдами, без наложения на карточки.
+    // flex-контейнер фиксирует высоту строки (равной размеру точки),
+    // на которую рассчитан padding-bottom слайдера.
     > .swiper-pagination {
       position: static;
       transform: none;
+      display: flex;
+      justify-content: center;
       margin-top: 12px;
     }
 
@@ -72,6 +101,7 @@
     }
 
     &__slider {
+      // На телефоне стрелки компактнее; отступы и позиции считаются из этой переменной.
       --swiper-navigation-size: 32px;
     }
   }

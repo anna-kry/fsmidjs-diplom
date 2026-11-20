@@ -39,4 +39,64 @@
     text-align: center;
     padding: 2rem;
   }
+
+  // Белая плашка с информацией о библиотеке (HTML-маркер 2GIS):
+  // появляется по клику на геоточку, отцентрирована над пином.
+  &__plate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, calc(-100% - 34px));
+    width: 260px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid $color-border;
+    border-radius: $radius-card;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 12px 14px;
+    font-family: $font-family;
+    color: $color-text;
+    pointer-events: auto;
+
+    // Маленькая стрелка вниз, к пину.
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -5px;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border-right: 1px solid $color-border;
+      border-bottom: 1px solid $color-border;
+      transform: translateX(-50%) rotate(45deg);
+    }
+  }
+
+  &__plate-title {
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.35;
+    margin-bottom: 6px;
+  }
+
+  &__plate-status {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 4px;
+
+    &--open {
+      color: #198754; // открыт — зелёный
+    }
+
+    &--closed {
+      color: #dc3545; // закрыт — красный
+    }
+  }
+
+  &__plate-phone {
+    font-size: 14px;
+    line-height: 1.4;
+    color: $color-text;
+  }
 }

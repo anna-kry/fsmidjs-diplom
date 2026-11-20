@@ -49,11 +49,6 @@
     justify-content: center;
     transition: transform 0.15s ease;
 
-    img {
-      width: 34px;
-      height: 34px;
-      display: block;
-    }
 
     &:hover {
       transform: translate(-2px, -2px);

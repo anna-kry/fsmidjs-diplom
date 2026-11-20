@@ -11,6 +11,7 @@ import Map from '../components/common/Map';
 import { searchBooks } from '../features/books/booksSlice';
 import { fetchLibraries } from '../features/libraries/librariesSlice';
 import type { BookFilters as BookFiltersValue } from '../types';
+import searchImage from '../img/search-hp.png';
 
 const PAGE_SIZE = 12;
 /** Библиотек для фильтра немного — забираем одним запросом. */
@@ -83,11 +84,10 @@ const HomePage = () => {
 
   return (
     <>
-      <h1 className="homepage__heading">Поиск книг</h1>
 
-      {/* Блок поиска (стили по макету Figma) */}
-      <Card className="homepage__search-card">
-        <Card.Body className="homepage__search-body">
+
+      <Card className="homepage__search">
+        <Card.Body className="homepage__search-body homepage__search-card">
           {librariesError && (
             <>
               <ErrorAlert message={librariesError} />
@@ -111,6 +111,12 @@ const HomePage = () => {
             />
           )}
         </Card.Body>
+        <img
+          className="homepage__search-img"
+          src={searchImage}
+          alt="Иллюстрация"
+
+        />
       </Card>
 
       {error && (
@@ -131,7 +137,7 @@ const HomePage = () => {
       )}
 
       {/* Первый экземпляр свайпера — под поиском */}
-      <BookSwiper title="Новые поступления" />
+      <BookSwiper title="Выбор редакции" />
 
       {/* Раздел «О нас» */}
       <section className="homepage__about" id="about">
@@ -142,19 +148,24 @@ const HomePage = () => {
           историки города, бережно собирающие и описывающие книжные сокровища
           столицы. Через наш агрегатор вы сможете быстро найти любую книгу —
           от редких дореволюционных изданий до новинок современной литературы.
+        </p>
+        <p className="homepage__about-text">
           Достаточно ввести название или автора и система покажет, в каких
           библиотеках есть нужный экземпляр. Вы можете выбрать удобный филиал,
           забронировать книгу онлайн и забрать её в назначенное время.
+        </p>
+        <p className="homepage__about-text">
           Сервис охватывает все округа Москвы, так что любимые книги всегда
           окажутся рядом.
         </p>
-      </section>
+        </section>
 
-      {/* Карта библиотек */}
-      <Map />
 
       {/* Второй экземпляр свайпера — после «О нас» */}
       <BookSwiper title="Выбор редакции" />
+
+      {/* Карта библиотек */}
+      <Map />
 
       {/* Блок с результатами поиска — только после выполнения поиска */}
       {showBooks && (

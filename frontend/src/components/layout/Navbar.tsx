@@ -41,7 +41,7 @@ const LayoutNavbar = () => {
         {/* Слева: вход / выход + имя пользователя */}
         <div className="navbar-app__left">
           {!user ? (
-            <Link to="/login" className="navbar-app__auth-btn">
+            <Link to="/login" className="navbar-app__auth-btn ">
               Войти
             </Link>
           ) : (
@@ -73,11 +73,8 @@ const LayoutNavbar = () => {
 
         {/* Справа: якоря навигации */}
         <nav className="navbar-app__right">
-          <Link to="/" className="navbar-app__anchor">
-            Библиотеки
-          </Link>
           <Link to="#" className="navbar-app__anchor">
-            На карту
+            Библиотеки
           </Link>
           <Link to="#about" className="navbar-app__anchor">
             О нас

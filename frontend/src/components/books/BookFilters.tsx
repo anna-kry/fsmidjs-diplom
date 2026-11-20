@@ -51,7 +51,7 @@ const BookFilters = ({
 
   return (
     <Form onSubmit={handleSubmit} className="book-filters__form">
-      <div className="book-filters__row">
+      <div className="">
         {!hideLibraryFilter && (
           <div className="book-filters__field">
             <Form.Label htmlFor="filter-library" className="book-filters__label">
