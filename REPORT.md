@@ -280,15 +280,16 @@ Backend авторизации и управления пользователя�
 
 Работа шла от базовой инфраструктуры к отдельным предметным модулям. Сначала были подготовлены конфигурация, база данных и пользователи. Затем frontend получил авторизацию и ролевую навигацию. После этого появился каталог, а модуль бронирования связал пользователей, книги и библиотеки общими бизнес-правилами. В конце административные сценарии каталога получили полноценный интерфейс.
 
-
 Отчёт
 Что реализовано
+
 1. API и Redux: rentals.api.ts (5 методов под реальные эндпоинты Дня 4), slice rentals с состояниями загрузки/ошибок для списка, создания, отмены и смены статуса; 401 в каждом thunk чистит сессию через sessionExpired() (как в usersSlice); ошибки мапятся по кодам 400/401/403/404/409 — сначала текст сервера, затем свой по коду ответа.
 2. RentalForm на BookPage: поля «Дата начала»/«Дата окончание» (по умолчанию — сегодня), клиентская валидация (не раньше сегодня, конец ≥ начало, ≤ 30 дней — те же правила, что в RentalsService.assertDatesValid), сообщения об ошибках, блокировка кнопки на время отправки (Бронирование…), редирект на /my/rentals при успехе. Гостю — подсказка «Войдите, чтобы забронировать» с кнопкой входа; admin/manager форма не показывается (backend: @Roles('client')).
 3. MyRentalsPage: список (книга, библиотека, даты, статус-бейдж), пустое состояние с кнопкой «Найти книгу», ошибки + пагинация; отмена только для reserved через существующий ConfirmModal; после отмены список перечитывается с сервера.
 4. ManagerRentalsPage: таблица (пользователь, книга, библиотека, даты, статус), фильтры — пользователь (select из /manager/users), библиотека (select из /common/libraries), статус; смена статуса через select только с допустимыми переходами из таблицы STATUS_TRANSITIONS бэка + кнопка «Применить»; после успеха список перезагружается.
 5. Маршруты: /my/rentals (client) и /manager/rentals (manager) с RoleRoute уже были — добавлять не пришлось, проверил.
-Созданные файлы
+   Созданные файлы
+
 - frontend/src/api/rentals.api.ts
 - frontend/src/features/rentals/rentalsSlice.ts
 - frontend/src/components/books/RentalForm.tsx
@@ -296,16 +297,16 @@ Backend авторизации и управления пользователя�
 - frontend/src/utils/rentals.ts (статусы, переходы, даты, валидация)
 - frontend/src/utils/rentals.test.ts (13 тестов)
 - Стили: styles/components/rentals/RentalsTable.scss, styles/components/rentals/RentalsFilters.scss, styles/components/books/RentalForm.scss, styles/pages/MyRentalsPage.scss, styles/pages/ManagerRentalsPage.scss
-Изменённые файлы
+  Изменённые файлы
 - frontend/src/pages/BookPage.tsx + styles/pages/BookPage.scss — подключены форма и подсказка гостю (остальное не менял)
 - frontend/src/pages/MyRentalsPage.tsx, frontend/src/pages/manager/ManagerRentalsPage.tsx — заменены заглушки «будет реализовано на Дне 4»
 - frontend/src/app/store.ts — добавлен reducer rentals
 - frontend/src/types/index.ts — BookRental: разрешён null для book/library/user (так отвечает mapper)
 - frontend/src/components/common/ConfirmModal.tsx — новый обратно совместимый проп loadingLabel (дефолт прежний «Удаление…», иначе при отмене кнопка писала бы «Удаление…»)
 - frontend/src/styles/index.scss — подключение новых стилей
-Маршруты
-Не добавлял — существующие: /my/rentals (RoleRoute client), /manager/rentals (RoleRoute manager).
-Проверки
+  Маршруты
+  Не добавлял — существующие: /my/rentals (RoleRoute client), /manager/rentals (RoleRoute manager).
+  Проверки
 - npx tsc -b — чисто.
 - npx eslint . — чисто (exit 0).
 - npx vitest run — 13/13 тестов (utils/rentals.ts: валидация дат, границы 30 дней, переходы статусов, форматирование дат).
@@ -313,10 +314,47 @@ Backend авторизации и управления пользователя�
 - SCSS собран через JS API sass — все новые селекторы присутствуют.
 - Backend не менял; для уверенности прогнал: 81 unit-тест и tsc бэка — зелёные.
 - Важно про окружение: дефолтный Node 18.14 не умеет vite build/vitest (там нужен styleText из Node ≥20) — это существовавшее ограничение окружения, не связано с изменениями; все сборки/тесты запускал на Node 22 из nvm (~/.nvm/versions/node/v22.22.3).
-Осталось проверить вручную
-Ручные сценарии в браузере не запускал (браузером в этой среде не управляю): бронирование с редиректом, показ 409 при пересечении дат, отмена с подтверждением, смена статусов менеджером и поведение счётчиков экземпляров. Тестов на фронтенде, кроме созданных мной, в проекте нет.
-Замечания и несоответствия backend
+  Осталось проверить вручную
+  Ручные сценарии в браузере не запускал (браузером в этой среде не управляю): бронирование с редиректом, показ 409 при пересечении дат, отмена с подтверждением, смена статусов менеджером и поведение счётчиков экземпляров. Тестов на фронтенде, кроме созданных мной, в проекте нет.
+  Замечания и несоответствия backend
+
 1. Списки без total: GET /client/rentals и GET /manager/rentals возвращают просто массив — пагинация сделана принятым в проекте приёмом «limit + 1 = есть следующая страница». Как и у GET /common/books раньше, точный счётчик «Всего: N» на бэке сделать нельзя без изменения ответа.
 2. Фильтр менеджера по пользователю — только точный userId, поиск по имени/email в API отсутствует. Сделал select из /manager/users, но API ограничивает limit ≤ 100, поэтому при >100 пользователей в списке будут не все (список библиотек — та же история).
 3. GET /client/rentals поддерживает фильтр status — в UI не используется (в задаче не требовался).
 4. Навигация: в UserMenu и Navbar пунктов «Мои брони»/«Аренды» нет — по условию меню не трогал; страница клиента открывается редиректом после бронирования и по прямому URL /my/rentals. Если нужно — добавить пункты в меню отдельным решением.
+
+5. Что реализовано
+   Полноценный чат поддержки для клиента (/support) и менеджера (/manager/support).
+   Реал-тайм через Socket.IO: история грузится по REST, затем подписка на subscribeToChat, новые сообщения приходят в newMessage и попадают в Redux без перезагрузки.
+   Дедупликация сообщений по id (гонка REST ↔ WS), хронологический порядок.
+   Автопрокрутка вниз только если пользователь внизу; отложенная отметка прочитанным, если читает старые.
+   Создание обращения клиентом, фильтр isActive у менеджера, данные клиента, закрытие обращения, индикатор непрочитанных.
+   Безопасный вывод текста (обычный React-текст, без dangerouslySetInnerHTML/innerHTML).
+   Адаптивная вёрстка на базе существующей дизайн-системы (SCSS-переменные проекта, Bootstrap).
+6. Файлы
+   Изменены: api/socket.ts, api/support.api.ts, app/store.ts, components/layout/UserMenu.tsx, components/support/{ChatWindow,MessageForm,MessageList}.tsx, features/support/supportSlice.ts, pages/SupportPage.tsx, pages/manager/ManagerSupportPage.tsx, styles/index.scss, types/index.ts. Созданы: components/support/SupportRequestList.tsx, styles/components/support/{SupportLayout,SupportList,ChatWindow,MessageList,MessageForm}.scss, utils/support.ts, utils/support.test.ts.
+
+7. REST-эндпоинты
+   GET/POST /client/support-requests, GET /manager/support-requests, GET/POST /common/support-requests/:id/messages, POST /common/support-requests/:id/messages/read, POST /manager/support-requests/:id/close. Дублирования API нет.
+
+8. WebSocket
+   api/socket.ts: singleton Socket.IO (io({ withCredentials: true }), тот же origin, cookie сессии автоматически), ref-count acquireSocket/releaseSocket — соединение закрывается, когда чатов не осталось. Обрабатываются connect/disconnect/connect_error, статус показывается в UI. ChatWindow подписывается только после загрузки истории и повторно при реконнекте; при уходе снимает слушатели newMessage/exception и отпускает сокет.
+
+9. Дедупликация
+   utils/support.ts#mergeMessages: Map по id, известное сообщение не перезаписывается (сохраняется локальный readAt), сортировка по createdAt, затем по id.
+
+10. Отметка прочитанным
+    Входящее (author.id !== currentUserId), когда пользователь внизу, → POST .../messages/read с createdBefore = now(). Если пользователь читает старые — createdBefore = createdAt последнего отложенного сообщения, отметка происходит при возврате вниз. Свои сообщения не отмечаются. Начальная история с непрочитанными входящими отмечается при открытии.
+
+11. Блокировка закрытого обращения
+    Фронт блокирует форму (isActive=false → MessageForm disabled, подпись «Обращение закрыто»), но источник истины — backend: при 400 с текстом «закрыто» срез помечает обращение закрытым (markRequestClosed). У клиента отправка в закрытое обращение также недоступна.
+
+12. Результаты проверок
+    npm run lint (backend + frontend) — без ошибок.
+    npm run build (frontend tsc -b && vite build) — успешно (только deprecation-предупреждения Sass @import, существующие в проекте).
+    npm run test: backend 88/88, frontend 23/23.
+13. Осталось проверить вручную
+    e2e в браузере двумя ролями: создание обращения клиентом → ответ менеджера → live-обновление у обеих сторон.
+    <script>alert(1)</script> отображается как текст (React экранирует — проверено статически).
+    Реконнект сокета (обрыв сети) и отсутствие дублей/лишних подписок.
+    Закрытие обращения менеджером и последующая блокировка отправки у клиента.

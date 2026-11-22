@@ -1,0 +1,52 @@
+@import '../../variables';
+
+// Форма отправки сообщения в чате.
+
+.message-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid $color-border;
+  background: $color-bg;
+
+  &__input {
+    font-family: $font-family;
+    font-size: 15px;
+    color: $color-text;
+    background: $color-input-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-input;
+    padding: 12px 16px;
+    resize: vertical;
+
+    &:focus {
+      outline: none;
+      border-color: $color-border;
+      box-shadow: none;
+    }
+
+    &::placeholder {
+      color: $color-placeholder;
+    }
+
+    &:disabled {
+      background: #ececec;
+      color: $color-text;
+    }
+  }
+
+  &__submit {
+    font-family: $font-family;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+// На узких экране кнопка уходит под поле ввода.
+@media (max-width: 576px) {
+  .message-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

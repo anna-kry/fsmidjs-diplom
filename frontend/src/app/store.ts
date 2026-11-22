@@ -4,6 +4,7 @@ import usersReducer from '../features/users/usersSlice';
 import librariesReducer from '../features/libraries/librariesSlice';
 import booksReducer from '../features/books/booksSlice';
 import rentalsReducer from '../features/rentals/rentalsSlice';
+import supportReducer from '../features/support/supportSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     libraries: librariesReducer,
     books: booksReducer,
     rentals: rentalsReducer,
+    support: supportReducer,
   },
 });
 

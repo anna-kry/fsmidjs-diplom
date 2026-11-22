@@ -1,0 +1,85 @@
+@import '../../variables';
+
+// Лента сообщений чата: свои справа, чужие слева.
+
+.message-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+
+  &__item {
+    max-width: 75%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: $color-bg;
+    border: 1px solid $color-border;
+    border-radius: 16px;
+    padding: 10px 14px;
+    align-self: flex-start;
+
+    // Свои сообщения — справа и с акцентной подсветкой.
+    &--mine {
+      align-self: flex-end;
+      background: $color-bg-search-card;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    font-family: $font-family;
+    font-size: 12px;
+  }
+
+  &__author {
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  &__time {
+    color: $color-text;
+    opacity: 0.6;
+    white-space: nowrap;
+  }
+
+  &__text {
+    font-family: $font-family;
+    font-size: 15px;
+    line-height: 1.4;
+    color: $color-text;
+    margin: 0;
+    // Переносы строк из ввода и длинные слова не ломают вёрстку.
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  // Пустое состояние.
+  &--empty {
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+  }
+
+  &__empty {
+    font-family: $font-family;
+    font-size: 15px;
+    color: #6c757d; // text-body-secondary
+    text-align: center;
+    margin: 0;
+  }
+}
+
+// На узких экранах сообщение занимает почти всю ширину.
+@media (max-width: 576px) {
+  .message-list__item {
+    max-width: 90%;
+  }
+}

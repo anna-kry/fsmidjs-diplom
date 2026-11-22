@@ -1,0 +1,90 @@
+@import '../../variables';
+
+// Окно чата: шапка со статусом, лента сообщений, форма отправки.
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  background: $color-card-bg;
+  border: 1px solid $color-border;
+  border-radius: $radius-card;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+  min-height: 420px;
+  max-height: 75vh;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 16px 24px;
+    border-bottom: 1px solid $color-border;
+    background: $color-bg;
+  }
+
+  &__title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0;
+  }
+
+  &__status {
+    font-family: $font-family;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid $color-border;
+    border-radius: 999px;
+    padding: 2px 12px;
+
+    &--active {
+      color: $color-success-green;
+      background: $color-bg-search-card;
+    }
+
+    &--closed {
+      color: $color-text;
+      background: #ececec;
+    }
+  }
+
+  // Подсказка о потере соединения с сервером чата.
+  &__offline {
+    font-family: $font-family;
+    font-size: 13px;
+    color: $color-error;
+  }
+
+  &__notices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 12px 24px 0;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0 8px;
+  }
+
+  // Сообщение о закрытом обращении над формой.
+  &__closed-note {
+    font-family: $font-family;
+    font-size: 14px;
+    color: $color-text;
+    background: $color-bg;
+    border-top: 1px solid $color-border;
+    padding: 10px 24px;
+    margin: 0;
+  }
+}

@@ -131,21 +131,32 @@ export interface BookRental {
   user?: { id: ID; name: string; email: string } | null;
 }
 
+/**
+ * Обращение из списков API (клиентский и менеджерский ответ, раздел 6.6).
+ * `client` возвращается только менеджеру; у клиента его нет.
+ */
 export interface SupportRequest {
   id: ID;
-  user: ID;
-  isActive: boolean;
   createdAt: string;
-  hasNewMessages?: boolean;
-  client?: { id: ID; name: string; email: string; contactPhone?: string };
+  isActive: boolean;
+  hasNewMessages: boolean;
+  client?: { id: ID; name: string; email: string; contactPhone?: string | null } | null;
 }
 
+/**
+ * Сообщение чата: ответ REST-истории и событие WS `newMessage`
+ * (одинаковая форма, у WS дополнительно есть `supportRequestId`).
+ */
 export interface Message {
   id: ID;
-  author: ID;
-  supportRequest: ID;
-  text: string;
   createdAt: string;
-  readAt?: string;
-  authorInfo?: { id: ID; name: string };
+  text: string;
+  /** null — сообщение ещё не прочитано собеседником. */
+  readAt: string | null;
+  author: { id: ID; name: string };
+}
+
+/** Сообщение из WebSocket-события `newMessage`. */
+export interface NewMessage extends Message {
+  supportRequestId: ID;
 }

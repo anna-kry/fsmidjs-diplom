@@ -1,0 +1,102 @@
+@import '../../variables';
+
+// Общая раскладка страниц чата (клиент /support и менеджер /manager/support):
+// заголовок, карточка сверху (клиент — создание обращения), затем сетка
+// «список обращений + окно чата».
+
+.support-chat {
+  &__heading {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 1.5rem; // mb-4
+  }
+
+  // Карточка над списком (создание обращения).
+  &__card {
+    background: $color-card-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-card;
+    box-shadow: $shadow-card;
+    padding: 24px;
+    margin-bottom: 1.5rem; // mb-4
+  }
+
+  &__section-title {
+    font-family: $font-family;
+    font-weight: 600;
+    font-size: 1.25rem; // h5
+    line-height: 1.2;
+    color: $color-text;
+    margin: 0 0 1rem; // mb-3
+  }
+
+  &__textarea {
+    font-family: $font-family;
+    font-size: 16px;
+    color: $color-text;
+    background: $color-input-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-input;
+    padding: 16px 24px;
+    margin-bottom: 1rem; // mb-3
+
+    &:focus {
+      outline: none;
+      border-color: $color-border;
+      box-shadow: none;
+    }
+
+    &::placeholder {
+      color: $color-placeholder;
+    }
+  }
+
+  // Сетка: узкий список слева, чат справа.
+  &__layout {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 1.5rem; // gap-4
+    align-items: start;
+  }
+
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  &__chat {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__chat-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__hint {
+    font-family: $font-family;
+    font-size: 16px;
+    color: #6c757d; // text-body-secondary
+    background: $color-card-bg;
+    border: 1px dashed $color-border;
+    border-radius: $radius-input;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    margin: 0;
+  }
+
+  // На узких экранах список уходит под чат.
+  @media (max-width: 992px) {
+    &__layout {
+      grid-template-columns: 1fr;
+    }
+  }
+}

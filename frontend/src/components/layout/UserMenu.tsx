@@ -103,6 +103,14 @@ const MENU_ITEMS: Record<UserRole, UserMenuItem[]> = {
       ),
     },    
     {
+      to: '/manager/support',
+      label: 'Обращения',
+      roles: ['manager'],
+      icon: (
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      ),
+    },
+    {
       to: '/manager/settings',
       label: 'Настройки',
       roles: ['manager'],
@@ -133,6 +141,14 @@ const MENU_ITEMS: Record<UserRole, UserMenuItem[]> = {
       ),
     },
     {
+      to: '/support',
+      label: 'Поддержка',
+      roles: ['client'],
+      icon: (
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      ),
+    },
+    {
       to: '/user/settings',
       label: 'Настройки',
       roles: ['client'],
@@ -155,8 +171,10 @@ const MENU_PATHS = [
   '/manager/settings',
   '/manager/users',
   '/manager/rentals',
+  '/manager/support',
   '/user/settings',
   '/user/rentals',
+  '/support',
 ];
 
 /**
