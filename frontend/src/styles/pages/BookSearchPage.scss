@@ -31,12 +31,13 @@
       grid-template-columns: repeat(3, 1fr); // col-lg-4
     }
     @media (min-width: 1200px) {
-      grid-template-columns: repeat(3, 1fr); // col-xl-3
+      grid-template-columns: repeat(4, 1fr); // col-xl-3
     }
   }
 
   &__book-cell {
     width: 100%; // col-12
+    min-width: 0; // prevent content overflow
   }
 
   // Пустая выдача (макет 1:2899): крупный заголовок по центру

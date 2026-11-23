@@ -1,7 +1,8 @@
 import { Button, Navbar, Container } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
+import { openLoginModal } from '../../features/ui/uiSlice';
 import type { UserRole } from '../../types';
 
 /**
@@ -19,6 +20,10 @@ const LayoutNavbar = () => {
   const handleLogout = async () => {
     await dispatch(logout());
     navigate('/');
+  };
+
+  const handleLoginClick = () => {
+    dispatch(openLoginModal());
   };
 
   /** Путь в личный кабинет в зависимости от роли пользователя. */
@@ -41,9 +46,13 @@ const LayoutNavbar = () => {
         {/* Слева: вход / выход + имя пользователя */}
         <div className="navbar-app__left">
           {!user ? (
-            <Link to="/login" className="navbar-app__auth-btn ">
+            <Button
+              variant="link"
+              className="navbar-app__auth-btn "
+              onClick={handleLoginClick}
+            >
               Войти
-            </Link>
+            </Button>
           ) : (
             <>
               <Button
@@ -66,22 +75,22 @@ const LayoutNavbar = () => {
 
         {/* По центру: логотип */}
         <div className="navbar-app__center">
-          <Navbar.Brand as={Link} to="/" className="navbar-app__logo">
+          <Navbar.Brand as="a" href="/" className="navbar-app__logo">
             Библиотеки
           </Navbar.Brand>
         </div>
 
         {/* Справа: якоря навигации */}
         <nav className="navbar-app__right">
-          <Link to="/" className="navbar-app__anchor">
+          <a href="/" className="navbar-app__anchor">
             На главную
-          </Link>
-          <Link to="/#about" className="navbar-app__anchor">
+          </a>
+          <a href="/#about" className="navbar-app__anchor">
             О нас
-          </Link>
-          <Link to="#footer" className="navbar-app__anchor">
+          </a>
+          <a href="#footer" className="navbar-app__anchor">
             Контакты
-          </Link>
+          </a>
         </nav>
       </Container>
     </Navbar>

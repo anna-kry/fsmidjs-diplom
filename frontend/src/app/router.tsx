@@ -2,8 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import BookSearchPage from '../pages/BookSearchPage';
 import BookPage from '../pages/BookPage';
-import LoginPage from '../pages/LoginPage';
-import RegisterPage from '../pages/RegisterPage';
 import MyRentalsPage from '../pages/MyRentalsPage';
 import SupportPage from '../pages/SupportPage';
 import NotFoundPage from '../pages/NotFoundPage';
@@ -17,9 +15,9 @@ import ManagerRentalsPage from '../pages/manager/ManagerRentalsPage';
 import ManagerSupportPage from '../pages/manager/ManagerSupportPage';
 import ManagerMainPage from '../pages/manager/ManagerMainPage';
 import ClientMainPage from '../pages/client/ClientMainPage';
-import GuestRoute from '../components/guards/GuestRoute';
 import RoleRoute from '../components/guards/RoleRoute';
 import Layout from '../components/layout/Layout';
+import AuthRouteWrapper from '../components/guards/AuthRouteWrapper';
 
 const AppRouter = () => {
   return (
@@ -32,17 +30,13 @@ const AppRouter = () => {
         <Route
           path="/login"
           element={
-            <GuestRoute>
-              <LoginPage />
-            </GuestRoute>
+            <AuthRouteWrapper mode="login" />
           }
         />
         <Route
           path="/register"
           element={
-            <GuestRoute>
-              <RegisterPage />
-            </GuestRoute>
+            <AuthRouteWrapper mode="register" />
           }
         />
         <Route

@@ -2,6 +2,9 @@ import { Transform } from 'class-transformer';
 import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
+/** Максимально допустимый год издания — текущий год. */
+const CURRENT_YEAR = new Date().getFullYear();
+
 /**
  * Преобразует строковые значения multipart-формы в число.
  * Пустая строка трактуется как отсутствие поля (для необязательных полей).
@@ -73,7 +76,7 @@ export class CreateBookDto {
   @Transform(({ value }) => toNumber(value))
   @IsInt()
   @Min(1000)
-  @Max(2100)
+  @Max(CURRENT_YEAR)
   year: number;
 
   @IsOptional()
@@ -106,7 +109,7 @@ export class UpdateBookDto {
   @Transform(({ value }) => toNumber(value))
   @IsInt()
   @Min(1000)
-  @Max(2100)
+  @Max(CURRENT_YEAR)
   year: number;
 
   @IsOptional()

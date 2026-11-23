@@ -3,6 +3,8 @@ import Navbar from './Navbar';
 import UserMenu from './UserMenu';
 import Footer from './Footer';
 import ScrollToHash from '../common/ScrollToHash';
+import LoginModal from '../auth/LoginModal';
+import RegisterModal from '../auth/RegisterModal';
 
 /**
  * Каркас приложения: шапка, боковое меню кабинета, контент и футер.
@@ -21,6 +23,8 @@ const Layout = () => {
         </div>
       </main>
       <Footer />
+      <LoginModal />
+      <RegisterModal />
     </div>
   );
 };
