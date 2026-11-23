@@ -83,6 +83,11 @@ const MessageList = ({
               >
                 {formatMessageTime(message.createdAt)}
               </time>
+              {mine && (
+                <span className="message-list__read">
+                  {message.readAt !== null ? '✓✓' : '✓'}
+                </span>
+              )}
             </div>
             {/* Обычный текст: React экранирует символы, HTML не интерпретируется. */}
             <p className="message-list__text">{message.text}</p>

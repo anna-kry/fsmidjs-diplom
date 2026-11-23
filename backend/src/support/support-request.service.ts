@@ -69,6 +69,25 @@ export class SupportRequestService {
     });
   }
 
+  /**
+   * Возвращает обращение после проверки существования и доступа.
+   * Клиент — только своё обращение; менеджер — любое.
+   */
+  async getRequestWithAccess(
+    supportRequest: ID,
+    currentUserId: ID,
+    isEmployee: boolean,
+  ): Promise<SupportRequest> {
+    const request = await this.supportRequestRepository.findOne({
+      where: { id: supportRequest },
+    });
+    if (!request) throw new NotFoundException('Обращение не найдено');
+    if (!isEmployee && request.userId !== currentUserId) {
+      throw new ForbiddenException('Нет доступа к обращению');
+    }
+    return request;
+  }
+
   async sendMessage(data: {
     author: ID;
     supportRequest: ID;
@@ -99,6 +118,19 @@ export class SupportRequestService {
     this.eventEmitter.on('support.message', handler);
     return () => {
       this.eventEmitter.off('support.message', handler);
+    };
+  }
+
+  subscribeMessagesRead(
+    handler: (data: {
+      supportRequestId: ID;
+      readerId: ID;
+      createdBefore: Date;
+    }) => void,
+  ): () => void {
+    this.eventEmitter.on('support.messagesRead', handler);
+    return () => {
+      this.eventEmitter.off('support.messagesRead', handler);
     };
   }
 }

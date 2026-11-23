@@ -137,6 +137,7 @@ const ManagerSupportPage = () => {
                 key={selected.id}
                 requestId={selected.id}
                 isActive={selected.isActive}
+                interlocutorId={selected.client?.id ?? undefined}
                 title={
                   selected.client
                     ? `Обращение: ${selected.client.name}`

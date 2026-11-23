@@ -25,6 +25,8 @@ export interface SupportState {
   /** Отправка сообщения. */
   sending: boolean;
   sendError: string | null;
+  /** Онлайн-статус пользователей: userId → online. */
+  presence: Record<number, boolean>;
   /** Закрытие обращения менеджером. */
   closing: boolean;
   closeError: string | null;
@@ -42,6 +44,7 @@ const initialState: SupportState = {
   messagesError: null,
   sending: false,
   sendError: null,
+  presence: {},
   closing: false,
   closeError: null,
 };
@@ -240,6 +243,40 @@ const supportSlice = createSlice({
         request.isActive = false;
       }
     },
+    /**
+     * Событие WebSocket messagesRead: собеседник отметил сообщения прочитанными.
+     * Обновляем readAt у наших сообщений — появляются две галочки.
+     */
+    messagesRead(
+      state,
+      action: PayloadAction<{
+        chatId: number;
+        readerId: number;
+        createdBefore: string;
+        currentUserId: number | null;
+      }>,
+    ) {
+      const { chatId, readerId, createdBefore, currentUserId } = action.payload;
+      // Свой статус не обновляем: галочки показываются только у собственных сообщений
+      // и означают, что собеседник их прочитал.
+      if (readerId === currentUserId || currentUserId === null) return;
+      if (state.selectedId === chatId) {
+        for (const message of state.messages) {
+          if (
+            message.author.id === currentUserId &&
+            message.readAt === null &&
+            message.createdAt <= createdBefore
+          ) {
+            message.readAt = createdBefore;
+          }
+        }
+      }
+    },
+    /** Онлайн-статус пользователя из события присутствия. */
+    presenceChanged(state, action: PayloadAction<{ userId: number; online: boolean }>) {
+      const { userId, online } = action.payload;
+      state.presence[userId] = online;
+    },
     /** Полный сброс при уходе со страницы поддержки. */
     resetSupport() {
       return initialState;
@@ -347,6 +384,8 @@ export const {
   receiveMessage,
   messageSent,
   markRequestClosed,
+  messagesRead,
+  presenceChanged,
   resetSupport,
 } = supportSlice.actions;
 export default supportSlice.reducer;

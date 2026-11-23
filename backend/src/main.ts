@@ -12,8 +12,31 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.setGlobalPrefix('/api');
-  app.use(helmet());
-
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", 'https://*.2gis.com'],
+          workerSrc: ["'self'", 'blob:'],
+          connectSrc: ["'self'", 'https://*.2gis.com'],
+          imgSrc: ["'self'", 'data:', 'blob:', 'https://*.2gis.com'],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            'https://*.2gis.com',
+            'https://fonts.googleapis.com',
+          ],
+          fontSrc: [
+            "'self'",
+            'data:',
+            'https://*.2gis.com',
+            'https://fonts.gstatic.com',
+          ],
+        },
+      },
+    }),
+  );
   // Сессии хранятся в памяти приложения (MemoryStore): перезапуск сервера
   // сбрасывает вход пользователей — это ожидаемо для этого проекта
   // (спецификация, раздел 2, п. 14).

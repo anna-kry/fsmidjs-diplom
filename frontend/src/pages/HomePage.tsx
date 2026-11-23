@@ -64,7 +64,7 @@ const HomePage = () => {
       />
 
       {/* Первый экземпляр свайпера — под поиском */}
-      <BookSwiper title="Выбор редакции" />
+      <BookSwiper title="Выбор редакции" bookIds={[1, 2, 3, 4, 6]} />
 
       {/* Раздел «О нас» */}
       <section className="homepage__about" id="about">
@@ -88,7 +88,7 @@ const HomePage = () => {
       </section>
 
       {/* Второй экземпляр свайпера — после «О нас» */}
-      <BookSwiper title="Выбор редакции" />
+      <BookSwiper title="Новые поступления" />
 
       {/* Карта библиотек */}
       <Map />

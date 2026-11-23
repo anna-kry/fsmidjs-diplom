@@ -11,6 +11,7 @@ import { ClientSupportController } from './client-support.controller';
 import { ManagerSupportController } from './manager-support.controller';
 import { CommonSupportController } from './common-support.controller';
 import { SupportGateway } from './support.gateway';
+import { PresenceService } from './services/presence.service';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SupportGateway } from './support.gateway';
     SupportRequestClientService,
     SupportRequestEmployeeService,
     SupportGateway,
+    PresenceService,
   ],
   exports: [SupportRequestService, SupportRequestClientService, SupportRequestEmployeeService],
 })

@@ -8,16 +8,20 @@ import {
   acquireSocket,
   getSocketStatus,
   releaseSocket,
+  subscribePresence,
   subscribeSocketStatus,
   type SocketStatus,
 } from '../../api/socket';
 import {
   markMessagesRead,
+  messagesRead,
   openSupportRequest,
+  presenceChanged,
   receiveMessage,
   sendMessage,
 } from '../../features/support/supportSlice';
 import { hasUnreadIncoming } from '../../utils/support';
+import { supportApi } from '../../api/support.api';
 import type { NewMessage } from '../../types';
 
 interface ChatWindowProps {
@@ -27,6 +31,10 @@ interface ChatWindowProps {
   isActive: boolean;
   /** Заголовок чата (имя клиента — на странице менеджера). */
   title?: string;
+  /** Идентификатор собеседника, статус которого показываем в заголовке. */
+  interlocutorId?: number;
+  /** Показывать статус службы поддержки (любой менеджер онлайн). */
+  supportStatus?: boolean;
 }
 
 /**
@@ -34,23 +42,41 @@ interface ChatWindowProps {
  * 1) история загружается по REST;
  * 2) после загрузки сокет подписывается на `subscribeToChat`;
  * 3) новые сообщения приходят по `newMessage` и попадают в Redux;
- * 4) входящие отмечаются прочитанными, когда пользователь их видит.
+ * 4) входящие отмечаются прочитанными, когда пользователь их видит;
+ * 5) статус собеседника отображается в заголовке и обновляется в реальном времени.
  *
  * Сокет один на приложение; при уходе из чата слушатели снимаются,
  * а соединение закрывается, когда открытых чатов больше нет.
  */
-const ChatWindow = ({ requestId, isActive, title }: ChatWindowProps) => {
+const ChatWindow = ({
+  requestId,
+  isActive,
+  title,
+  interlocutorId,
+  supportStatus,
+}: ChatWindowProps) => {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector(
     (state) => state.auth.user?.id ?? null,
   );
-  const { messages, messagesLoading, messagesError, sending, sendError } =
-    useAppSelector((state) => state.support);
+  const {
+    messages,
+    messagesLoading,
+    messagesError,
+    sending,
+    sendError,
+  } = useAppSelector((state) => state.support);
 
   const [socketStatus, setSocketStatus] =
     useState<SocketStatus>(getSocketStatus);
   /** Ошибка подписки на комнату чата (событие `exception`). */
   const [subscribeError, setSubscribeError] = useState<string | null>(null);
+  /** Онлайн-статус собеседника. */
+  const [peerStatus, setPeerStatus] = useState<{
+    userId: number | null;
+    online: boolean | null;
+    label: string;
+  }>({ userId: null, online: null, label: '' });
 
   /** Пользователь внизу ленты — новые сообщения можно показывать скроллом. */
   const atBottomRef = useRef(true);
@@ -110,6 +136,32 @@ const ChatWindow = ({ requestId, isActive, title }: ChatWindowProps) => {
       }
     };
 
+    /** Событие прочтения сообщений собеседником — обновляем галочки. */
+    const handleMessagesRead = (payload: {
+      supportRequestId: number;
+      readerId: number;
+      readAt: string;
+    }) => {
+      if (cancelled || payload.supportRequestId !== requestId) return;
+      void dispatch(
+        messagesRead({
+          chatId: payload.supportRequestId,
+          readerId: payload.readerId,
+          createdBefore: payload.readAt,
+          currentUserId,
+        }),
+      );
+    };
+
+    /** Изменение онлайн-статуса пользователя. */
+    const handlePresenceChanged = (payload: { userId: number; online: boolean }) => {
+      if (cancelled) return;
+      void dispatch(presenceChanged(payload));
+      if (interlocutorId !== undefined && payload.userId === interlocutorId) {
+        setPeerStatus((prev) => ({ ...prev, online: payload.online }));
+      }
+    };
+
     // Отказ сервера на подписку (WsException → событие `exception`).
     const handleException = (error?: { code?: number; message?: string }) => {
       if (cancelled) return;
@@ -119,6 +171,7 @@ const ChatWindow = ({ requestId, isActive, title }: ChatWindowProps) => {
     };
 
     socket.on('newMessage', handleNewMessage);
+    socket.on('messagesRead', handleMessagesRead);
     socket.on('exception', handleException);
     const unsubscribeStatus = subscribeSocketStatus((next) => {
       if (cancelled) return;
@@ -126,6 +179,40 @@ const ChatWindow = ({ requestId, isActive, title }: ChatWindowProps) => {
       // После переподключения комната на сервере потеряна — подписываемся снова.
       if (next === 'connected') subscribe();
     });
+    // Глобальная подписка на присутствие, чтобы Redux держал актуальные статусы.
+    const unsubscribePresence = subscribePresence(handlePresenceChanged);
+
+    /** Загрузить статус собеседника при открытии чата. */
+    const loadPeerStatus = async () => {
+      if (cancelled) return;
+      if (interlocutorId !== undefined) {
+        try {
+          const status = await supportApi.fetchRequestStatus(requestId);
+          if (!cancelled) {
+            setPeerStatus({
+              userId: status.userId,
+              online: status.online,
+              label: title ?? `Пользователь №${status.userId}`,
+            });
+          }
+        } catch {
+          // Статус недоступен — не блокируем чат.
+        }
+      } else if (supportStatus) {
+        try {
+          const online = await supportApi.fetchSupportOnline();
+          if (!cancelled) {
+            setPeerStatus({
+              userId: null,
+              online: online.online,
+              label: 'Поддержка',
+            });
+          }
+        } catch {
+          // Не блокируем чат.
+        }
+      }
+    };
 
     // Шаг 1 — история по REST, шаг 2 — подписка (спецификация, раздел 7).
     void dispatch(openSupportRequest(requestId)).then((result) => {
@@ -141,16 +228,35 @@ const ChatWindow = ({ requestId, isActive, title }: ChatWindowProps) => {
         );
       }
       subscribe();
+      void loadPeerStatus();
     });
+
+    // Подписка на присутствие собеседника после открытия чата.
+    if (interlocutorId !== undefined) {
+      void acquireSocket().emit('presence:subscribe', { userId: interlocutorId });
+    }
 
     return () => {
       cancelled = true;
       socket.off('newMessage', handleNewMessage);
+      socket.off('messagesRead', handleMessagesRead);
       socket.off('exception', handleException);
       unsubscribeStatus();
+      unsubscribePresence();
+      if (interlocutorId !== undefined) {
+        const s = acquireSocket();
+        void s.emit('presence:unsubscribe', { userId: interlocutorId });
+      }
       releaseSocket();
     };
-  }, [requestId, dispatch, currentUserId]);
+  }, [
+    requestId,
+    dispatch,
+    currentUserId,
+    interlocutorId,
+    supportStatus,
+    title,
+  ]);
 
   /** Пользователь вернулся вниз — читаем отложенные входящие. */
   const handleBottomChange = useCallback(
@@ -178,6 +284,20 @@ const ChatWindow = ({ requestId, isActive, title }: ChatWindowProps) => {
     <section className="chat-window">
       <header className="chat-window__header">
         <h2 className="chat-window__title">{title ?? `Обращение № ${requestId}`}</h2>
+        {peerStatus.userId !== null && (
+          <>
+            <span className="chat-window__peer">
+              <span
+                className={`chat-window__peer-status ${
+                  peerStatus.online
+                    ? 'chat-window__peer-status--online'
+                    : 'chat-window__peer-status--offline'
+                }`}
+              ></span>
+              {peerStatus.online ? 'В сети' : 'Не в сети'}
+            </span>
+          </>
+        )}
         <span
           className={`chat-window__status ${
             isActive

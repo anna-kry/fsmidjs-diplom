@@ -39,7 +39,7 @@ describe('Support access', () => {
   it('mark read foreign request -> 403', async () => {
     const requestRepo = { findOne: jest.fn().mockResolvedValue({ id: 1, userId: 2 }) } as unknown as Repository<SupportRequest>;
     const messageRepo = { createQueryBuilder: jest.fn() } as unknown as Repository<Message>;
-    const service = new SupportRequestClientService(requestRepo, messageRepo, {} as unknown as SupportRequestService);
+    const service = new SupportRequestClientService(requestRepo, messageRepo, {} as unknown as SupportRequestService, new EventEmitter2());
     await expect(service.markMessagesAsRead({ user: 1, supportRequest: 1, createdBefore: new Date() })).rejects.toBeInstanceOf(ForbiddenException);
   });
 

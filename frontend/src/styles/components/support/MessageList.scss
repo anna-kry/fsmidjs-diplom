@@ -49,6 +49,14 @@
     white-space: nowrap;
   }
 
+  /** Индикатор прочтения у собственных сообщений: одна или две галочки. */
+  &__read {
+    font-family: $font-family;
+    font-size: 12px;
+    color: $color-success-green;
+    white-space: nowrap;
+  }
+
   &__text {
     font-family: $font-family;
     font-size: 15px;

@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Repository } from 'typeorm';
 import { ID } from '../common/types/id.type';
 import { SupportRequest } from './entities/support-request.entity';
@@ -12,6 +13,7 @@ export class SupportRequestEmployeeService {
     private readonly supportRequestRepository: Repository<SupportRequest>,
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async markMessagesAsRead(params: {
@@ -32,6 +34,11 @@ export class SupportRequestEmployeeService {
       .andWhere('readAt IS NULL')
       .andWhere('sentAt <= :createdBefore', { createdBefore: params.createdBefore })
       .execute();
+    this.eventEmitter.emit('support.messagesRead', {
+      supportRequestId: params.supportRequest,
+      readerId: params.user,
+      createdBefore: params.createdBefore,
+    });
   }
 
   async getUnreadCount(supportRequest: ID): Promise<number> {

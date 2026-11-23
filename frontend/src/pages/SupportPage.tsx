@@ -142,6 +142,7 @@ const SupportPage = () => {
               key={selected.id}
               requestId={selected.id}
               isActive={selected.isActive}
+              supportStatus
             />
           ) : (
             <p className="support-chat__hint">

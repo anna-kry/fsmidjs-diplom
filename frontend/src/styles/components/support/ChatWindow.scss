@@ -32,6 +32,29 @@
     margin: 0;
   }
 
+  /** Статус собеседника в заголовке чата. */
+  &__peer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: $font-family;
+    font-size: 13px;
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  &__peer-status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #9ca3af;
+  }
+
+  &__peer-status--online {
+    background: $color-success-green;
+  }
+
   &__status {
     font-family: $font-family;
     font-size: 13px;

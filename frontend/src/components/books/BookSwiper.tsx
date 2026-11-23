@@ -175,11 +175,11 @@ const BookSwiper = ({
         // Раскладка: 1 слайд на телефоне, 2 на планшете, 3 на ноутбуке, 4 на
         // широком экране; отступ между карточками — 16px.
         spaceBetween={16}
-        slidesPerView={1}
+        slidesPerView={2.5}
         breakpoints={{
-          576: { slidesPerView: 2 },
-          992: { slidesPerView: 3 },
-          1400: { slidesPerView: 3 },
+          576: { slidesPerView: 1 },
+          992: { slidesPerView: 2 },
+          1400: { slidesPerView: 2.5 },
         }}
       >
         {state.books.map((book) => (
