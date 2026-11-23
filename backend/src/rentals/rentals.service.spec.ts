@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DataSource, FindOperator, Repository } from 'typeorm';
-import { Book } from '../libraries/entities/book.entity';
+import { LibraryBook } from '../libraries/entities/library-book.entity';
 import { BookRental } from './entities/book-rental.entity';
 import { RentalsService } from './rentals.service';
 
@@ -30,6 +30,10 @@ interface ManagerMock {
 interface RentalsRepositoryMock {
   count: jest.Mock;
   createQueryBuilder: jest.Mock;
+}
+
+interface LibraryBooksRepositoryMock {
+  findOne: jest.Mock;
 }
 
 interface QueryBuilderMock {
@@ -59,22 +63,19 @@ function plusDays(days: number): string {
   return formatDate(date);
 }
 
-function createBook(overrides: Partial<Book> = {}): Book {
+function createLibraryBook(overrides: Partial<LibraryBook> = {}): LibraryBook {
   return {
-    id: 10,
+    id: 1,
+    bookId: 10,
     libraryId: 1,
-    title: 'JavaScript: сильные стороны',
-    author: 'Дуглас Крокфорд',
-    year: 2012,
-    description: null,
-    coverImage: null,
-    isAvailable: true,
     totalCopies: 1,
     availableCopies: 1,
+    book: null as any,
+    library: null as any,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  } as Book;
+  } as LibraryBook;
 }
 
 function createRental(overrides: Partial<BookRental> = {}): BookRental {
@@ -95,24 +96,25 @@ function createRental(overrides: Partial<BookRental> = {}): BookRental {
 describe('RentalsService', () => {
   let manager: ManagerMock;
   let rentalsRepository: RentalsRepositoryMock;
+  let libraryBooksRepository: LibraryBooksRepositoryMock;
   let queryBuilder: QueryBuilderMock;
   let dataSource: DataSource;
   let service: RentalsService;
 
-  // Что вернёт manager.findOne для книги и для аренды.
-  let bookResult: Book | null;
+  // Что вернёт manager.findOne для LibraryBook и для аренды.
+  let libraryBookResult: LibraryBook | null;
   let rentalResult: BookRental | null;
 
   beforeEach(() => {
-    bookResult = createBook();
+    libraryBookResult = createLibraryBook();
     rentalResult = createRental();
 
     manager = {
       findOne: jest
         .fn()
         .mockImplementation((entity: unknown, _options?: unknown) => {
-          if (entity === Book) {
-            return Promise.resolve(bookResult);
+          if (entity === LibraryBook) {
+            return Promise.resolve(libraryBookResult);
           }
           if (entity === BookRental) {
             return Promise.resolve(rentalResult);
@@ -129,8 +131,8 @@ describe('RentalsService', () => {
         ),
       save: jest
         .fn()
-        .mockImplementation((data: Partial<BookRental>) =>
-          Promise.resolve({ updatedAt: new Date(), ...data } as BookRental),
+        .mockImplementation((data: Partial<BookRental | LibraryBook>) =>
+          Promise.resolve({ updatedAt: new Date(), ...data }),
         ),
     };
 
@@ -148,6 +150,10 @@ describe('RentalsService', () => {
       createQueryBuilder: jest.fn().mockReturnValue(queryBuilder),
     };
 
+    libraryBooksRepository = {
+      findOne: jest.fn(),
+    };
+
     // Транзакция в unit-тестах выполняет колбэк сразу с мок-менеджером.
     dataSource = {
       transaction: jest.fn(
@@ -157,6 +163,7 @@ describe('RentalsService', () => {
 
     service = new RentalsService(
       rentalsRepository as unknown as Repository<BookRental>,
+      libraryBooksRepository as unknown as Repository<LibraryBook>,
       dataSource,
     );
   });
@@ -164,7 +171,7 @@ describe('RentalsService', () => {
   describe('create: правила дат', () => {
     const validDates = { dateStart: today(), dateEnd: plusDays(7) };
 
-    it('создаёт бронь в статусе reserved, счётчики книги не меняются', async () => {
+    it('создаёт бронь в статусе reserved, счётчики LibraryBook не меняются', async () => {
       const rental = await service.create(5, {
         bookId: 10,
         libraryId: 1,
@@ -180,21 +187,21 @@ describe('RentalsService', () => {
         dateEnd: validDates.dateEnd,
         status: 'reserved',
       });
-      // save вызывается только для брони — книга не затрагивается.
+      // save вызывается только для брони — LibraryBook не затрагивается.
       expect(manager.save).toHaveBeenCalledTimes(1);
       expect(rental.status).toBe('reserved');
       expect(rental.id).toBe(101);
     });
 
-    it('блокирует строку книги на время транзакции (pessimistic_write)', async () => {
+    it('блокирует строку LibraryBook на время транзакции (pessimistic_write)', async () => {
       await service.create(5, {
         bookId: 10,
         libraryId: 1,
         ...validDates,
       });
 
-      expect(manager.findOne).toHaveBeenCalledWith(Book, {
-        where: { id: 10 },
+      expect(manager.findOne).toHaveBeenCalledWith(LibraryBook, {
+        where: { bookId: 10, libraryId: 1 },
         lock: { mode: 'pessimistic_write' },
       });
     });
@@ -280,8 +287,8 @@ describe('RentalsService', () => {
   });
 
   describe('create: книга, библиотека и пересечение периодов', () => {
-    it('книги нет: 404', async () => {
-      bookResult = null;
+    it('LibraryBook не найдена: 404', async () => {
+      libraryBookResult = null;
 
       await expect(
         service.create(5, {
@@ -291,20 +298,6 @@ describe('RentalsService', () => {
           dateEnd: plusDays(3),
         }),
       ).rejects.toThrow(NotFoundException);
-      expect(manager.create).not.toHaveBeenCalled();
-    });
-
-    it('libraryId не совпадает с библиотекой книги: 400', async () => {
-      bookResult = createBook({ libraryId: 2 });
-
-      await expect(
-        service.create(5, {
-          bookId: 10,
-          libraryId: 1,
-          dateStart: today(),
-          dateEnd: plusDays(3),
-        }),
-      ).rejects.toThrow(BadRequestException);
       expect(manager.create).not.toHaveBeenCalled();
     });
 
@@ -323,6 +316,7 @@ describe('RentalsService', () => {
       ];
       expect(entity).toBe(BookRental);
       expect(where.where.bookId).toBe(10);
+      expect(where.where.libraryId).toBe(1);
       expect(where.where.status?.type).toBe('in');
       expect(where.where.status?.value).toEqual(['reserved', 'active']);
       // existing.dateStart <= new.dateEnd
@@ -334,7 +328,7 @@ describe('RentalsService', () => {
     });
 
     it('totalCopies=1 и есть пересекающаяся бронь: 409', async () => {
-      bookResult = createBook({ totalCopies: 1, availableCopies: 1 });
+      libraryBookResult = createLibraryBook({ totalCopies: 1, availableCopies: 1 });
       manager.count.mockResolvedValue(1);
 
       await expect(
@@ -350,7 +344,7 @@ describe('RentalsService', () => {
     });
 
     it('totalCopies=2 и одна пересекающаяся бронь: создание проходит', async () => {
-      bookResult = createBook({ totalCopies: 2, availableCopies: 1 });
+      libraryBookResult = createLibraryBook({ totalCopies: 2, availableCopies: 1 });
       manager.count.mockResolvedValue(1);
 
       await expect(
@@ -385,7 +379,7 @@ describe('RentalsService', () => {
 
       expect(result.status).toBe('cancelled');
       expect(manager.save).toHaveBeenCalledTimes(1);
-      // reserved не занимал экземпляр — книга не изменяется.
+      // reserved не занимал экземпляр — LibraryBook не изменяется.
       expect(manager.findOne).toHaveBeenCalledWith(
         BookRental,
         expect.objectContaining({
@@ -431,101 +425,91 @@ describe('RentalsService', () => {
 
   describe('changeStatus: допустимые переходы и счётчики', () => {
     it('reserved → active уменьшает availableCopies на 1', async () => {
-      bookResult = createBook({
+      libraryBookResult = createLibraryBook({
         totalCopies: 3,
         availableCopies: 2,
-        isAvailable: true,
       });
       rentalResult = createRental({ status: 'reserved' });
 
       const result = await service.changeStatus(100, 'active');
 
       expect(result.status).toBe('active');
-      expect(bookResult.availableCopies).toBe(1);
-      expect(bookResult.isAvailable).toBe(true);
-      // save вызывается для книги и для аренды.
+      expect(libraryBookResult.availableCopies).toBe(1);
+      // save вызывается для LibraryBook и для аренды.
       expect(manager.save).toHaveBeenCalledTimes(2);
-      expect(manager.findOne).toHaveBeenCalledWith(Book, {
-        where: { id: 10 },
+      expect(manager.findOne).toHaveBeenCalledWith(LibraryBook, {
+        where: { bookId: 10, libraryId: 1 },
         lock: { mode: 'pessimistic_write' },
       });
     });
 
     it('reserved → active при availableCopies=0 не уходит ниже нуля', async () => {
-      bookResult = createBook({
+      libraryBookResult = createLibraryBook({
         totalCopies: 1,
         availableCopies: 0,
-        isAvailable: false,
       });
       rentalResult = createRental({ status: 'reserved' });
 
       await service.changeStatus(100, 'active');
 
-      expect(bookResult.availableCopies).toBe(0);
-      expect(bookResult.isAvailable).toBe(false);
+      expect(libraryBookResult.availableCopies).toBe(0);
     });
 
-    it('active → completed увеличивает availableCopies на 1 и isAvailable=true', async () => {
-      bookResult = createBook({
+    it('active → completed увеличивает availableCopies на 1', async () => {
+      libraryBookResult = createLibraryBook({
         totalCopies: 2,
         availableCopies: 0,
-        isAvailable: false,
       });
       rentalResult = createRental({ status: 'active' });
 
       const result = await service.changeStatus(100, 'completed');
 
       expect(result.status).toBe('completed');
-      expect(bookResult.availableCopies).toBe(1);
-      expect(bookResult.isAvailable).toBe(true);
+      expect(libraryBookResult.availableCopies).toBe(1);
     });
 
     it('active → cancelled увеличивает availableCopies на 1', async () => {
-      bookResult = createBook({
+      libraryBookResult = createLibraryBook({
         totalCopies: 1,
         availableCopies: 0,
-        isAvailable: false,
       });
       rentalResult = createRental({ status: 'active' });
 
       const result = await service.changeStatus(100, 'cancelled');
 
       expect(result.status).toBe('cancelled');
-      expect(bookResult.availableCopies).toBe(1);
-      expect(bookResult.isAvailable).toBe(true);
+      expect(libraryBookResult.availableCopies).toBe(1);
     });
 
     it('availableCopies не превышает totalCopies', async () => {
-      bookResult = createBook({
+      libraryBookResult = createLibraryBook({
         totalCopies: 2,
         availableCopies: 2,
-        isAvailable: true,
       });
       rentalResult = createRental({ status: 'active' });
 
       await service.changeStatus(100, 'completed');
 
-      expect(bookResult.availableCopies).toBe(2);
+      expect(libraryBookResult.availableCopies).toBe(2);
     });
 
-    it('reserved → cancelled не трогает счётчики книги', async () => {
-      bookResult = createBook({
+    it('reserved → cancelled не трогает счётчики LibraryBook', async () => {
+      libraryBookResult = createLibraryBook({
         totalCopies: 1,
         availableCopies: 1,
-        isAvailable: true,
       });
       rentalResult = createRental({ status: 'reserved' });
 
       const result = await service.changeStatus(100, 'cancelled');
 
       expect(result.status).toBe('cancelled');
-      // Книга вообще не запрашивалась.
+      // LibraryBook вообще не запрашивалась.
       expect(
         manager.findOne.mock.calls.filter(
-          (call: [unknown]) => call[0] === Book,
+          (call: [unknown]) => call[0] === LibraryBook,
         ),
       ).toHaveLength(0);
-      expect(bookResult.availableCopies).toBe(1);
+      expect(libraryBookResult.availableCopies).toBe(1);
     });
 
     it('reserved → completed: 400', async () => {
@@ -599,6 +583,24 @@ describe('RentalsService', () => {
       expect(rentalsRepository.count).toHaveBeenCalledWith({
         where: {
           libraryId: 2,
+          status: expect.objectContaining({ type: 'in' }),
+        },
+      });
+    });
+
+    it('LibraryBook: проверяется по bookId и libraryId', async () => {
+      libraryBooksRepository.findOne.mockResolvedValue(createLibraryBook({ id: 1 }));
+      rentalsRepository.count.mockResolvedValue(1);
+
+      await expect(service.hasActiveRentalsForLibraryBook(1)).resolves.toBe(true);
+      expect(libraryBooksRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        select: { bookId: true, libraryId: true },
+      });
+      expect(rentalsRepository.count).toHaveBeenCalledWith({
+        where: {
+          bookId: 10,
+          libraryId: 1,
           status: expect.objectContaining({ type: 'in' }),
         },
       });

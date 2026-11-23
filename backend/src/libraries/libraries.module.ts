@@ -9,11 +9,15 @@ import { CommonBooksController } from './common-books.controller';
 import { CommonLibrariesController } from './common-libraries.controller';
 import { Book } from './entities/book.entity';
 import { Library } from './entities/library.entity';
+import { LibraryBook } from './entities/library-book.entity';
 import { ACTIVE_RENTALS_CHECKER } from './interfaces/active-rentals-checker.interface';
 import { LibrariesService } from './libraries.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Library, Book]), RentalsModule],
+  imports: [
+    TypeOrmModule.forFeature([Library, Book, LibraryBook]),
+    RentalsModule,
+  ],
   controllers: [
     CommonLibrariesController,
     CommonBooksController,

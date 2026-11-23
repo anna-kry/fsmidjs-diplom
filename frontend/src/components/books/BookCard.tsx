@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { Book } from '../../types';
+import type { Book, BookAvailability } from '../../types';
 
 /**
  * Карточка книги (макет Figma, card 1:830): обложка слева, данные справа,
@@ -15,7 +15,25 @@ const BookCard = ({ book, variant = 'default' }: { book: Book; variant?: 'defaul
   const [coverFailed, setCoverFailed] = useState(false);
 
   const showCover = Boolean(book.coverImage) && !coverFailed;
-  const available = book.availableCopies > 0;
+
+  // Вычисляем общую доступность из нового формата
+  const totalAvailable = book.availability
+    ? book.availability.reduce((sum, a) => sum + a.availableCopies, 0)
+    : 0;
+  const totalCopies = book.availability
+    ? book.availability.reduce((sum, a) => sum + a.totalCopies, 0)
+    : 0;
+  const available = totalAvailable > 0;
+
+  // Показываем доступность по библиотекам
+  const availabilityItems = book.availability?.map((a: BookAvailability) => (
+    <div key={a.library.id} className="book-card__availability-item">
+      <span className="book-card__library-name">{a.library.name}</span>
+      <span className="book-card__library-copies">
+        {a.availableCopies} из {a.totalCopies}
+      </span>
+    </div>
+  ));
 
   return (
     <article className={`book-card book-card--${variant}`}>
@@ -63,10 +81,10 @@ const BookCard = ({ book, variant = 'default' }: { book: Book; variant?: 'defaul
               </div>
             )}
             <div className="book-card__field">
-              <span className="book-card__label">Библиотека:</span>
-              <span className="book-card__value">
-                {book.library ? book.library.name : 'Библиотека не указана'}
-              </span>
+              <span className="book-card__label">Доступность:</span>
+              <div className="book-card__availability-list">
+                {availabilityItems}
+              </div>
             </div>
           </div>
 
@@ -79,7 +97,7 @@ const BookCard = ({ book, variant = 'default' }: { book: Book; variant?: 'defaul
               {available ? 'Доступна' : 'Нет в наличии'}
             </span>
             <span className="book-card__copies">
-              {book.availableCopies} из {book.totalCopies}
+              {totalAvailable} из {totalCopies}
             </span>
           </div>
         </div>

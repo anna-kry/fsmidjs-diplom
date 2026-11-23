@@ -14,6 +14,7 @@ import {
 import { CreateBookDto, UpdateBookDto } from './dto/book.dto';
 import { Book } from './entities/book.entity';
 import { Library } from './entities/library.entity';
+import { LibraryBook } from './entities/library-book.entity';
 import { BooksService } from './books.service';
 import { ActiveRentalsChecker } from './interfaces/active-rentals-checker.interface';
 
@@ -38,11 +39,21 @@ interface BooksRepositoryMock {
 
 interface LibrariesRepositoryMock {
   findOneBy: jest.Mock;
+  findBy: jest.Mock;
+}
+
+interface LibraryBooksRepositoryMock {
+  findOne: jest.Mock;
+  create: jest.Mock;
+  save: jest.Mock;
+  remove: jest.Mock;
+  find: jest.Mock;
 }
 
 interface CheckerMock {
   hasActiveRentalsForBook: jest.Mock;
   hasActiveRentalsForLibrary: jest.Mock;
+  hasActiveRentalsForLibraryBook: jest.Mock;
 }
 
 const UPLOADS_DIR = '/tmp/uploads-for-unit-tests';
@@ -53,26 +64,36 @@ function createDto(overrides: Partial<CreateBookDto> = {}): CreateBookDto {
     author: 'Михаил Булгаков',
     year: 1967,
     description: 'Роман',
-    libraryId: 1,
-    totalCopies: 3,
+    libraries: [{ libraryId: 1, totalCopies: 3 }],
     ...overrides,
   };
 }
 
-function createBook(overrides: Partial<Book> = {}): Book {
+function createLibraryBook(overrides: Partial<LibraryBook> = {}): LibraryBook {
   const library = { id: 1, name: 'Центральная', address: 'ул. Ленина, 1' } as Library;
   return {
-    id: 10,
-    library,
+    id: 1,
+    bookId: 10,
     libraryId: 1,
+    library,
+    book: null as any,
+    totalCopies: 3,
+    availableCopies: 3,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  } as LibraryBook;
+}
+
+function createBook(overrides: Partial<Book> = {}): Book {
+  return {
+    id: 10,
     title: 'Мастер и Маргарита',
     author: 'Михаил Булгаков',
     year: 1967,
     description: 'Роман',
     coverImage: null,
-    isAvailable: true,
-    totalCopies: 3,
-    availableCopies: 3,
+    libraryBooks: [createLibraryBook()],
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
@@ -83,6 +104,7 @@ describe('BooksService', () => {
   let queryBuilder: QueryBuilderMock;
   let booksRepository: BooksRepositoryMock;
   let librariesRepository: LibrariesRepositoryMock;
+  let libraryBooksRepository: LibraryBooksRepositoryMock;
   let checker: CheckerMock;
   let configService: ConfigService;
   let booksService: BooksService;
@@ -111,10 +133,21 @@ describe('BooksService', () => {
       remove: jest.fn().mockResolvedValue(undefined),
       find: jest.fn().mockResolvedValue([]),
     };
-    librariesRepository = { findOneBy: jest.fn() };
+    librariesRepository = {
+      findOneBy: jest.fn(),
+      findBy: jest.fn(),
+    };
+    libraryBooksRepository = {
+      findOne: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
+      remove: jest.fn(),
+      find: jest.fn(),
+    };
     checker = {
       hasActiveRentalsForBook: jest.fn().mockResolvedValue(false),
       hasActiveRentalsForLibrary: jest.fn().mockResolvedValue(false),
+      hasActiveRentalsForLibraryBook: jest.fn().mockResolvedValue(false),
     };
     configService = {
       get: jest.fn().mockReturnValue(UPLOADS_DIR),
@@ -123,13 +156,14 @@ describe('BooksService', () => {
     booksService = new BooksService(
       booksRepository as unknown as Repository<Book>,
       librariesRepository as unknown as Repository<Library>,
+      libraryBooksRepository as unknown as Repository<LibraryBook>,
       checker as unknown as ActiveRentalsChecker,
       configService,
     );
   });
 
   describe('findAll: получение списка', () => {
-    it('соединяет библиотеку и возвращает книги с общим числом', async () => {
+    it('соединяет библиотеки через libraryBooks и возвращает книги с общим числом', async () => {
       const books = [createBook()];
       queryBuilder.getMany.mockResolvedValue(books);
       queryBuilder.getCount.mockResolvedValue(42);
@@ -144,7 +178,11 @@ describe('BooksService', () => {
       });
 
       expect(queryBuilder.leftJoinAndSelect).toHaveBeenCalledWith(
-        'book.library',
+        'book.libraryBooks',
+        'libraryBook',
+      );
+      expect(queryBuilder.leftJoinAndSelect).toHaveBeenCalledWith(
+        'libraryBook.library',
         'library',
       );
       expect(result.books).toBe(books);
@@ -178,7 +216,7 @@ describe('BooksService', () => {
       });
 
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
-        'book.libraryId = :libraryId',
+        'libraryBook.libraryId = :libraryId',
         { libraryId: 7 },
       );
     });
@@ -242,7 +280,7 @@ describe('BooksService', () => {
       });
 
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
-        'book.availableCopies > 0',
+        'libraryBook.availableCopies > 0',
       );
     });
 
@@ -258,7 +296,7 @@ describe('BooksService', () => {
 
       expect(queryBuilder.andWhere).toHaveBeenCalledTimes(4);
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
-        'book.libraryId = :libraryId',
+        'libraryBook.libraryId = :libraryId',
         { libraryId: 3 },
       );
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
@@ -270,13 +308,13 @@ describe('BooksService', () => {
         { title: '%война%' },
       );
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
-        'book.availableCopies > 0',
+        'libraryBook.availableCopies > 0',
       );
     });
   });
 
   describe('findById: книга по id', () => {
-    it('возвращает книгу вместе с библиотекой', async () => {
+    it('возвращает книгу вместе с libraryBooks и библиотеками', async () => {
       const book = createBook();
       booksRepository.findOne.mockResolvedValue(book);
 
@@ -284,7 +322,7 @@ describe('BooksService', () => {
 
       expect(booksRepository.findOne).toHaveBeenCalledWith({
         where: { id: 10 },
-        relations: { library: true },
+        relations: { libraryBooks: { library: true } },
       });
       expect(result).toBe(book);
     });
@@ -299,8 +337,15 @@ describe('BooksService', () => {
   });
 
   describe('create: создание книги', () => {
-    it('возвращает 400, если библиотеки не существует', async () => {
-      librariesRepository.findOneBy.mockResolvedValue(null);
+    it('возвращает 400, если библиотек не указано', async () => {
+      await expect(booksService.create(createDto({ libraries: [] }))).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(booksRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('возвращает 400, если библиотеки не существуют', async () => {
+      librariesRepository.findBy.mockResolvedValue([]);
 
       await expect(booksService.create(createDto())).rejects.toThrow(
         BadRequestException,
@@ -308,31 +353,33 @@ describe('BooksService', () => {
       expect(booksRepository.save).not.toHaveBeenCalled();
     });
 
-    it('создаёт книгу со связью и счётчиками: availableCopies = totalCopies', async () => {
+    it('создаёт книгу со связями и счётчиками: availableCopies = totalCopies', async () => {
       const library = { id: 1, name: 'Центральная', address: 'ул. Ленина, 1' };
-      librariesRepository.findOneBy.mockResolvedValue(library);
+      librariesRepository.findBy.mockResolvedValue([library]);
 
-      const result = await booksService.create(createDto({ totalCopies: 4 }));
+      const result = await booksService.create(createDto({ libraries: [{ libraryId: 1, totalCopies: 4 }] }));
 
       expect(booksRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
           title: 'Мастер и Маргарита',
           author: 'Михаил Булгаков',
-          library,
-          libraryId: 1,
-          totalCopies: 4,
-          availableCopies: 4,
-          isAvailable: true,
+          libraryBooks: expect.arrayContaining([
+            expect.objectContaining({
+              library,
+              libraryId: 1,
+              totalCopies: 4,
+              availableCopies: 4,
+            }),
+          ]),
         }),
       );
-      expect(result.availableCopies).toBe(4);
-      expect(result.isAvailable).toBe(true);
+      expect(result.libraryBooks[0].availableCopies).toBe(4);
     });
 
     it('удаляет сохранённый файл, если запись в БД не удалась', async () => {
       const uploadsDir = await mkdtemp(join(tmpdir(), 'covers-create-test-'));
       (configService.get as jest.Mock).mockReturnValue(uploadsDir);
-      librariesRepository.findOneBy.mockResolvedValue({ id: 1 } as Library);
+      librariesRepository.findBy.mockResolvedValue([{ id: 1 } as Library]);
       booksRepository.save.mockRejectedValueOnce(new Error('db down'));
 
       const file: CoverFile = {
@@ -358,51 +405,51 @@ describe('BooksService', () => {
 
     it('увеличение totalCopies увеличивает availableCopies на ту же разницу', async () => {
       await prepareExisting(
-        createBook({ totalCopies: 3, availableCopies: 3, isAvailable: true }),
+        createBook({ libraryBooks: [createLibraryBook({ totalCopies: 3, availableCopies: 3 })] }),
       );
+      librariesRepository.findBy.mockResolvedValue([{ id: 1 } as Library]);
 
       const result = await booksService.update(10, {
-        totalCopies: 6,
+        libraries: [{ libraryId: 1, totalCopies: 6 }],
       } as UpdateBookDto);
 
-      expect(result.totalCopies).toBe(6);
-      expect(result.availableCopies).toBe(6);
-      expect(result.isAvailable).toBe(true);
+      expect(result.libraryBooks[0].totalCopies).toBe(6);
+      expect(result.libraryBooks[0].availableCopies).toBe(6);
     });
 
     it('выданные экземпляры не возвращаются в доступные при уменьшении', async () => {
       // На полке 1 из 5, значит 4 экземпляра на руках у читателей.
       await prepareExisting(
-        createBook({ totalCopies: 5, availableCopies: 1, isAvailable: true }),
+        createBook({ libraryBooks: [createLibraryBook({ totalCopies: 5, availableCopies: 1 })] }),
       );
+      librariesRepository.findBy.mockResolvedValue([{ id: 1 } as Library]);
 
       const result = await booksService.update(10, {
-        totalCopies: 3,
+        libraries: [{ libraryId: 1, totalCopies: 3 }],
       } as UpdateBookDto);
 
-      expect(result.totalCopies).toBe(3);
+      expect(result.libraryBooks[0].totalCopies).toBe(3);
       // 3 - 4 (на руках) < 0, поэтому не меньше нуля.
-      expect(result.availableCopies).toBe(0);
-      expect(result.isAvailable).toBe(false);
+      expect(result.libraryBooks[0].availableCopies).toBe(0);
     });
 
     it('availableCopies никогда не превышает новый totalCopies', async () => {
       await prepareExisting(
-        createBook({ totalCopies: 5, availableCopies: 3, isAvailable: true }),
+        createBook({ libraryBooks: [createLibraryBook({ totalCopies: 5, availableCopies: 3 })] }),
       );
+      librariesRepository.findBy.mockResolvedValue([{ id: 1 } as Library]);
 
       const result = await booksService.update(10, {
-        totalCopies: 1,
+        libraries: [{ libraryId: 1, totalCopies: 1 }],
       } as UpdateBookDto);
 
-      expect(result.availableCopies).toBeLessThanOrEqual(result.totalCopies);
-      expect(result.availableCopies).toBeGreaterThanOrEqual(0);
-      expect(result.isAvailable).toBe(result.availableCopies > 0);
+      expect(result.libraryBooks[0].availableCopies).toBeLessThanOrEqual(result.libraryBooks[0].totalCopies);
+      expect(result.libraryBooks[0].availableCopies).toBeGreaterThanOrEqual(0);
     });
 
-    it('без изменения totalCopies счётчики не трогаются', async () => {
+    it('без изменения libraries счётчики не трогаются', async () => {
       await prepareExisting(
-        createBook({ totalCopies: 5, availableCopies: 1, isAvailable: true }),
+        createBook({ libraryBooks: [createLibraryBook({ totalCopies: 5, availableCopies: 1 })] }),
       );
 
       const result = await booksService.update(10, {
@@ -410,9 +457,8 @@ describe('BooksService', () => {
       } as UpdateBookDto);
 
       expect(result.title).toBe('Новое название');
-      expect(result.totalCopies).toBe(5);
-      expect(result.availableCopies).toBe(1);
-      expect(result.isAvailable).toBe(true);
+      expect(result.libraryBooks[0].totalCopies).toBe(5);
+      expect(result.libraryBooks[0].availableCopies).toBe(1);
     });
 
     it('выбрасывает 404, если книги нет', async () => {
@@ -423,12 +469,12 @@ describe('BooksService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('возвращает 400 при смене библиотеки на несуществующую', async () => {
+    it('возвращает 400 при указании несуществующей библиотеки', async () => {
       await prepareExisting(createBook());
-      librariesRepository.findOneBy.mockResolvedValue(null);
+      librariesRepository.findBy.mockResolvedValue([]);
 
       await expect(
-        booksService.update(10, { libraryId: 999 } as UpdateBookDto),
+        booksService.update(10, { libraries: [{ libraryId: 999, totalCopies: 1 }] } as UpdateBookDto),
       ).rejects.toThrow(BadRequestException);
       expect(booksRepository.save).not.toHaveBeenCalled();
     });
@@ -445,8 +491,9 @@ describe('BooksService', () => {
     });
 
     it('возвращает 409, если по книге есть активные аренды', async () => {
-      booksRepository.findOne.mockResolvedValue(createBook());
-      checker.hasActiveRentalsForBook.mockResolvedValue(true);
+      const book = createBook({ libraryBooks: [createLibraryBook({ id: 5 })] });
+      booksRepository.findOne.mockResolvedValue(book);
+      checker.hasActiveRentalsForLibraryBook.mockResolvedValue(true);
 
       await expect(booksService.delete(10)).rejects.toThrow(
         ConflictException,
@@ -460,7 +507,7 @@ describe('BooksService', () => {
 
       await booksService.delete(10);
 
-      expect(checker.hasActiveRentalsForBook).toHaveBeenCalledWith(10);
+      expect(checker.hasActiveRentalsForLibraryBook).toHaveBeenCalledWith(1);
       expect(booksRepository.remove).toHaveBeenCalledWith(book);
     });
   });

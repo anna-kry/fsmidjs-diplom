@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
 import { SeedService } from './seed.service';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -20,6 +21,8 @@ import { SeedService } from './seed.service';
         logging: false,
         entities: [],
         autoLoadEntities: true,
+        migrations: [join(__dirname, 'migrations', '*.ts')],
+        migrationsRun: false,
       }),
     }),
     UsersModule,

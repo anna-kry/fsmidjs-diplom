@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { escapeLike } from '../common/utils/escape-like';
 import { ID } from '../common/types/id.type';
 import {
@@ -18,12 +18,13 @@ import {
 import { CreateBookDto, UpdateBookDto } from './dto/book.dto';
 import { Book } from './entities/book.entity';
 import { Library } from './entities/library.entity';
+import { LibraryBook } from './entities/library-book.entity';
 import {
   ActiveRentalsChecker,
   ACTIVE_RENTALS_CHECKER,
 } from './interfaces/active-rentals-checker.interface';
 
-/** Параметры поиска книг (DTO поиска структурно совпадает). */
+/** Параметры поиска книг. */
 export interface SearchBooksParams {
   library: string;
   author: string;
@@ -36,16 +37,15 @@ export interface SearchBooksParams {
 /** Результат поиска: страница книг + общее число подходящих записей. */
 export interface SearchBooksResult {
   books: Book[];
-  /** Сколько книг подходит под фильтры всего (без учёта limit/offset). */
   total: number;
 }
 
 /**
  * Книги: публичный поиск с фильтрами и административный CRUD.
  *
- * Счётчики экземпляров:
- * - при создании availableCopies = totalCopies (все экземпляры на полке);
- * - при смене totalCopies выданные экземпляры (totalCopies - availableCopies)
+ * Счётчики экземпляров хранятся в LibraryBook:
+ * - при создании создаётся LibraryBook с availableCopies = totalCopies;
+ * - при смене totalCopies в конкретной библиотеке выданные экземпляры
  *   сохраняются, новый availableCopies ограничен диапазоном 0..totalCopies.
  */
 @Injectable()
@@ -55,6 +55,8 @@ export class BooksService {
     private readonly booksRepository: Repository<Book>,
     @InjectRepository(Library)
     private readonly librariesRepository: Repository<Library>,
+    @InjectRepository(LibraryBook)
+    private readonly libraryBooksRepository: Repository<LibraryBook>,
     @Inject(ACTIVE_RENTALS_CHECKER)
     private readonly activeRentals: ActiveRentalsChecker,
     private readonly configService: ConfigService,
@@ -67,16 +69,15 @@ export class BooksService {
   async findAll(params: SearchBooksParams): Promise<SearchBooksResult> {
     const query = this.booksRepository
       .createQueryBuilder('book')
-      .leftJoinAndSelect('book.library', 'library');
+      .leftJoinAndSelect('book.libraryBooks', 'libraryBook')
+      .leftJoinAndSelect('libraryBook.library', 'library');
 
     if (params.library) {
       if (/^\d+$/.test(params.library)) {
-        // Число в фильтре — id библиотеки.
-        query.andWhere('book.libraryId = :libraryId', {
+        query.andWhere('libraryBook.libraryId = :libraryId', {
           libraryId: Number(params.library),
         });
       } else {
-        // Иначе — частичное совпадение названия библиотеки.
         query.andWhere('library.name ILIKE :libraryName', {
           libraryName: `%${escapeLike(params.library)}%`,
         });
@@ -93,13 +94,9 @@ export class BooksService {
       });
     }
     if (params.availableOnly) {
-      // availableOnly — есть хотя бы один свободный экземпляр.
-      query.andWhere('book.availableCopies > 0');
+      query.andWhere('libraryBook.availableCopies > 0');
     }
 
-    // Общее число найденных книг для заголовка «Найдено: N …».
-    // getCount() выполняет запрос на клоне и сам сбрасывает skip/take,
-    // поэтому total не зависит от пагинации.
     const total = await query.getCount();
 
     query.orderBy('book.id', 'ASC');
@@ -113,7 +110,7 @@ export class BooksService {
   async findById(id: ID): Promise<Book> {
     const book = await this.booksRepository.findOne({
       where: { id },
-      relations: { library: true },
+      relations: { libraryBooks: { library: true } },
     });
 
     if (!book) {
@@ -124,31 +121,59 @@ export class BooksService {
   }
 
   async create(dto: CreateBookDto, file?: CoverFile): Promise<Book> {
-    const library = await this.librariesRepository.findOneBy({
-      id: dto.libraryId,
-    });
-
-    if (!library) {
-      throw new BadRequestException('Библиотеки с таким id не существует');
+    if (!dto.libraries?.length) {
+      throw new BadRequestException('Необходимо указать хотя бы одну библиотеку');
     }
 
-    // Файл сохраняется до записи в БД: если сохранение не удастся,
-    // файл будет удалён и в базе не останется битой ссылки.
+    // Проверяем уникальность libraryId в запросе
+    const libraryIds = dto.libraries.map((l) => l.libraryId);
+    const uniqueLibraryIds = new Set(libraryIds);
+    if (uniqueLibraryIds.size !== libraryIds.length) {
+      throw new BadRequestException('Библиотеки не должны повторяться');
+    }
+
+    // Проверяем существование всех библиотек
+    const libraries = await this.librariesRepository.findBy({
+      id: In(libraryIds),
+    });
+    if (libraries.length !== libraryIds.length) {
+      throw new BadRequestException('Одна или несколько библиотек не найдены');
+    }
+
+    // // Проверяем, что книга ещё не привязана к этим библиотекам
+    // const existingLinks = await this.libraryBooksRepository.find({
+    //   where: { libraryId: In(libraryIds) },
+    //   select: { libraryId: true },
+    // });
+    // const existingLibIds = new Set((existingLinks ?? []).map((l) => l.libraryId));
+    // for (const libId of libraryIds) {
+    //   if (existingLibIds.has(libId)) {
+    //     throw new ConflictException(
+    //       `Книга уже привязана к библиотеке ${libId}`,
+    //     );
+    //   }
+    // }
+
     const coverImage = file ? await saveCoverFile(this.uploadsDir, file) : null;
 
     try {
-      const totalCopies = dto.totalCopies;
+      const libraryBooks = dto.libraries.map((l) => {
+        const library = libraries.find((lib) => lib.id === l.libraryId)!;
+        return {
+          library,
+          libraryId: l.libraryId,
+          totalCopies: l.totalCopies,
+          availableCopies: l.totalCopies,
+        };
+      });
+
       const book = this.booksRepository.create({
         title: dto.title,
         author: dto.author,
         year: dto.year,
         description: dto.description,
-        library,
-        libraryId: library.id,
-        totalCopies,
-        availableCopies: totalCopies,
-        isAvailable: totalCopies > 0,
         coverImage,
+        libraryBooks,
       });
 
       return await this.booksRepository.save(book);
@@ -162,18 +187,6 @@ export class BooksService {
 
   async update(id: ID, dto: UpdateBookDto, file?: CoverFile): Promise<Book> {
     const book = await this.findById(id);
-
-    // Новая библиотека проверяется до записи файла обложки.
-    let nextLibrary: Library | null = null;
-    if (dto.libraryId !== undefined) {
-      nextLibrary = await this.librariesRepository.findOneBy({
-        id: dto.libraryId,
-      });
-
-      if (!nextLibrary) {
-        throw new BadRequestException('Библиотеки с таким id не существует');
-      }
-    }
 
     const newCoverImage = file
       ? await saveCoverFile(this.uploadsDir, file)
@@ -193,21 +206,48 @@ export class BooksService {
       if (dto.description !== undefined) {
         book.description = dto.description;
       }
-      if (nextLibrary) {
-        book.library = nextLibrary;
-        book.libraryId = nextLibrary.id;
-      }
 
-      if (dto.totalCopies !== undefined && dto.totalCopies !== book.totalCopies) {
-        // Выданные экземпляры не «возвращаются» на полку:
-        // availableCopies = новый totalCopies минус то, что на руках.
-        const issued = book.totalCopies - book.availableCopies;
-        book.availableCopies = Math.min(
-          Math.max(dto.totalCopies - issued, 0),
-          dto.totalCopies,
-        );
-        book.totalCopies = dto.totalCopies;
-        book.isAvailable = book.availableCopies > 0;
+      // Обновление/добавление библиотек через libraries array
+      if (dto.libraries?.length) {
+        const libraryIds = dto.libraries.map((l) => l.libraryId);
+        const uniqueLibraryIds = new Set(libraryIds);
+        if (uniqueLibraryIds.size !== libraryIds.length) {
+          throw new BadRequestException('Библиотеки не должны повторяться');
+        }
+
+        const libraries = await this.librariesRepository.findBy({
+          id: In(libraryIds),
+        });
+        if (libraries.length !== libraryIds.length) {
+          throw new BadRequestException('Одна или несколько библиотек не найдены');
+        }
+
+        for (const l of dto.libraries) {
+          const library = libraries.find((lib) => lib.id === l.libraryId)!;
+          let libraryBook = book.libraryBooks.find(
+            (lb) => lb.libraryId === l.libraryId,
+          );
+          if (libraryBook) {
+            // Обновляем существующую
+            const issued = libraryBook.totalCopies - libraryBook.availableCopies;
+            libraryBook.availableCopies = Math.min(
+              Math.max(l.totalCopies - issued, 0),
+              l.totalCopies,
+            );
+            libraryBook.totalCopies = l.totalCopies;
+          } else {
+            // Добавляем новую
+            libraryBook = this.libraryBooksRepository.create({
+              book,
+              bookId: book.id,
+              library,
+              libraryId: l.libraryId,
+              totalCopies: l.totalCopies,
+              availableCopies: l.totalCopies,
+            });
+            book.libraryBooks.push(libraryBook);
+          }
+        }
       }
 
       if (newCoverImage) {
@@ -216,14 +256,12 @@ export class BooksService {
 
       const updated = await this.booksRepository.save(book);
 
-      // Старая обложка удаляется только после успешного обновления.
       if (newCoverImage && previousCoverImage) {
         await removeCoverFile(this.uploadsDir, previousCoverImage);
       }
 
       return updated;
     } catch (error) {
-      // Новый файл не должен остаться на диске, если запись не удалась.
       if (newCoverImage) {
         await removeCoverFile(this.uploadsDir, newCoverImage);
       }
@@ -234,13 +272,95 @@ export class BooksService {
   async delete(id: ID): Promise<void> {
     const book = await this.findById(id);
 
-    if (await this.activeRentals.hasActiveRentalsForBook(id)) {
-      throw new ConflictException(
-        'Нельзя удалить книгу: по ней есть активные аренды',
-      );
+    for (const libraryBook of book.libraryBooks) {
+      if (await this.activeRentals.hasActiveRentalsForLibraryBook(libraryBook.id)) {
+        throw new ConflictException(
+          'Нельзя удалить книгу: по ней есть активные аренды',
+        );
+      }
     }
 
     await this.booksRepository.remove(book);
-    await removeCoverFile(this.uploadsDir, book.coverImage);
+    if (book.coverImage) {
+      await removeCoverFile(this.uploadsDir, book.coverImage);
+    }
+  }
+
+  /** Добавляет существующую книгу в новую библиотеку. */
+  async addLibrary(
+    bookId: ID,
+    libraryId: ID,
+    totalCopies: number,
+  ): Promise<LibraryBook> {
+    const book = await this.findById(bookId);
+
+    const library = await this.librariesRepository.findOneBy({ id: libraryId });
+    if (!library) {
+      throw new BadRequestException('Библиотеки с таким id не существует');
+    }
+
+    const existing = await this.libraryBooksRepository.findOne({
+      where: { bookId, libraryId },
+    });
+    if (existing) {
+      throw new ConflictException(
+        'Эта книга уже есть в указанной библиотеке',
+      );
+    }
+
+    const libraryBook = this.libraryBooksRepository.create({
+      book,
+      bookId,
+      library,
+      libraryId,
+      totalCopies,
+      availableCopies: totalCopies,
+    });
+
+    return this.libraryBooksRepository.save(libraryBook);
+  }
+
+  /** Обновляет количество экземпляров книги в конкретной библиотеке. */
+  async updateLibraryCopies(
+    bookId: ID,
+    libraryId: ID,
+    totalCopies: number,
+  ): Promise<LibraryBook> {
+    const libraryBook = await this.libraryBooksRepository.findOne({
+      where: { bookId, libraryId },
+      relations: { book: true, library: true },
+    });
+
+    if (!libraryBook) {
+      throw new NotFoundException('Связь книги с библиотекой не найдена');
+    }
+
+    const issued = libraryBook.totalCopies - libraryBook.availableCopies;
+    libraryBook.availableCopies = Math.min(
+      Math.max(totalCopies - issued, 0),
+      totalCopies,
+    );
+    libraryBook.totalCopies = totalCopies;
+
+    return this.libraryBooksRepository.save(libraryBook);
+  }
+
+  /** Удаляет связь книги с библиотекой. */
+  async removeLibrary(bookId: ID, libraryId: ID): Promise<void> {
+    const libraryBook = await this.libraryBooksRepository.findOne({
+      where: { bookId, libraryId },
+    });
+
+    if (!libraryBook) {
+      throw new NotFoundException('Связь книги с библиотекой не найдена');
+    }
+
+    if (await this.activeRentals.hasActiveRentalsForLibraryBook(libraryBook.id)) {
+      throw new ConflictException(
+        'Нельзя удалить связь: по ней есть активные аренды',
+      );
+    }
+
+    await this.libraryBooksRepository.remove(libraryBook);
   }
 }

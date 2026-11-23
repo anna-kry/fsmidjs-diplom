@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { SupportRequest } from './entities/support-request.entity';
 import { Message } from './entities/message.entity';
 import { SupportRequestClientService } from './support-request-client.service';
-import { SupportRequestEmployeeService } from './support-request-employee.service';
 
 describe('messagesRead событие', () => {
   it('клиентская служба излучает событие после отметки прочитанным', async () => {

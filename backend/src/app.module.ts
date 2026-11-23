@@ -7,6 +7,7 @@ import { validateConfig } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import { LibrariesModule } from './libraries/libraries.module';
 import { RentalsModule } from './rentals/rentals.module';
 import { SupportModule } from './support/support.module';
@@ -45,6 +46,7 @@ import { SupportModule } from './support/support.module';
     DatabaseModule,
     HealthModule,
     AuthModule,
+    UsersModule,
     LibrariesModule,
     RentalsModule,
     SupportModule,

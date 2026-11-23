@@ -12,6 +12,7 @@ import { removeCoverFile } from './cover-upload.config';
 import { CreateLibraryDto, UpdateLibraryDto } from './dto/library.dto';
 import { Book } from './entities/book.entity';
 import { Library } from './entities/library.entity';
+import { LibraryBook } from './entities/library-book.entity';
 import {
   ActiveRentalsChecker,
   ACTIVE_RENTALS_CHECKER,
@@ -28,6 +29,8 @@ export class LibrariesService {
     private readonly librariesRepository: Repository<Library>,
     @InjectRepository(Book)
     private readonly booksRepository: Repository<Book>,
+    @InjectRepository(LibraryBook)
+    private readonly libraryBooksRepository: Repository<LibraryBook>,
     @Inject(ACTIVE_RENTALS_CHECKER)
     private readonly activeRentals: ActiveRentalsChecker,
     private readonly configService: ConfigService,
@@ -84,8 +87,9 @@ export class LibrariesService {
 
     // Обложки книг нужно собрать до удаления: книги удаляются каскадно.
     const books = await this.booksRepository.find({
-      where: { libraryId: id },
+      where: { libraryBooks: { libraryId: id } },
       select: { coverImage: true },
+      relations: { libraryBooks: true },
     });
 
     await this.librariesRepository.remove(library);

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import session from 'express-session';
 import passport from 'passport';
+import express from 'express';
 import { AppModule } from './app.module';
 import { SessionIoAdapter } from './common/adapters/session-io.adapter';
 
@@ -12,6 +13,8 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.setGlobalPrefix('/api');
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -67,7 +70,6 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
       transform: true,
     }),
   );

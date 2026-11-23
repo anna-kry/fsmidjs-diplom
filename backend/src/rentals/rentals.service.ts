@@ -15,7 +15,7 @@ import {
 } from 'typeorm';
 import { ID } from '../common/types/id.type';
 import { ActiveRentalsChecker } from '../libraries/interfaces/active-rentals-checker.interface';
-import { Book } from '../libraries/entities/book.entity';
+import { LibraryBook } from '../libraries/entities/library-book.entity';
 import { BookRental } from './entities/book-rental.entity';
 import {
   FindRentalsParams,
@@ -31,7 +31,7 @@ const MAX_RENTAL_DAYS = 30;
 /** Аренды, участвующие в проверке пересечения периодов (раздел 2, п. 9). */
 const OVERLAPPING_STATUSES: RentalStatus[] = ['reserved', 'active'];
 
-/** Аренды, блокирующие удаление книги или библиотеки (раздел 2, п. 12). */
+/** Аренды, блокирующие удаление книги, библиотеки или LibraryBook (раздел 2, п. 12). */
 const ACTIVE_STATUSES: RentalStatus[] = ['reserved', 'active'];
 
 /**
@@ -98,11 +98,11 @@ function clampCopies(value: number, totalCopies: number): number {
  * Аренда книг (спецификация, разделы 2 пп. 9–12 и 6.4).
  *
  * Создание и смена статуса выполняются в одной транзакции с блокировкой
- * строки книги (`SELECT ... FOR UPDATE`, pessimistic_write): проверка
+ * строки LibraryBook (`SELECT ... FOR UPDATE`, pessimistic_write): проверка
  * пересечения периодов и запись брони атомарны, параллельные запросы
  * сериализуются по блокировке и не могут забронировать один экземпляр дважды.
  *
- * Реализует и ActiveRentalsChecker: удаление книги/библиотеки блокируют
+ * Реализует и ActiveRentalsChecker: удаление книги/библиотеки/ LibraryBook блокируют
  * брони в статусах `reserved` и `active` (409).
  */
 @Injectable()
@@ -110,6 +110,8 @@ export class RentalsService implements IRentalService, ActiveRentalsChecker {
   constructor(
     @InjectRepository(BookRental)
     private readonly rentalsRepository: Repository<BookRental>,
+    @InjectRepository(LibraryBook)
+    private readonly libraryBooksRepository: Repository<LibraryBook>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -117,42 +119,37 @@ export class RentalsService implements IRentalService, ActiveRentalsChecker {
     return this.dataSource.transaction(async (manager) => {
       this.assertDatesValid(dto.dateStart, dto.dateEnd);
 
-      // Блокируем строку книги: параллельные создания ждут её по одному.
-      const book = await manager.findOne(Book, {
-        where: { id: dto.bookId },
+      // Находим LibraryBook для данной книги и библиотеки
+      const libraryBook = await manager.findOne(LibraryBook, {
+        where: { bookId: dto.bookId, libraryId: dto.libraryId },
         lock: { mode: 'pessimistic_write' },
       });
 
-      if (!book) {
-        throw new NotFoundException('Книга не найдена');
-      }
-
-      if (book.libraryId !== dto.libraryId) {
-        throw new BadRequestException(
-          'Книга не относится к указанной библиотеке',
-        );
+      if (!libraryBook) {
+        throw new NotFoundException('Книга не найдена в указанной библиотеке');
       }
 
       const overlapping = await manager.count(BookRental, {
         where: {
-          bookId: book.id,
+          bookId: dto.bookId,
+          libraryId: dto.libraryId,
           status: In(OVERLAPPING_STATUSES),
           dateStart: LessThanOrEqual(dto.dateEnd),
           dateEnd: MoreThanOrEqual(dto.dateStart),
         },
       });
 
-      if (overlapping >= book.totalCopies) {
+      if (overlapping >= libraryBook.totalCopies) {
         throw new ConflictException(
-          'На выбранные даты нет свободных экземпляров книги',
+          'На выбранные даты нет свободных экземпляров книги в этой библиотеке',
         );
       }
 
-      // Статус reserved не занимает экземпляр — счётчики книги не меняются.
+      // Статус reserved не занимает экземпляр — счётчики LibraryBook не меняются.
       const rental = manager.create(BookRental, {
         userId,
-        libraryId: book.libraryId,
-        bookId: book.id,
+        libraryId: dto.libraryId,
+        bookId: dto.bookId,
         dateStart: dto.dateStart,
         dateEnd: dto.dateEnd,
         status: 'reserved',
@@ -216,7 +213,7 @@ export class RentalsService implements IRentalService, ActiveRentalsChecker {
         );
       }
 
-      // reserved не занимает экземпляр — счётчики книги не меняются.
+      // reserved не занимает экземпляр — счётчики LibraryBook не меняются.
       rental.status = 'cancelled';
       return await manager.save(rental);
     });
@@ -244,22 +241,21 @@ export class RentalsService implements IRentalService, ActiveRentalsChecker {
         COUNTER_DELTAS[`${rental.status}>${status}`] ?? 0;
 
       if (delta !== 0) {
-        // Счётчики книги пересчитываются под блокировкой строки книги.
-        const book = await manager.findOne(Book, {
-          where: { id: rental.bookId },
+        // Счётчики LibraryBook пересчитываются под блокировкой строки LibraryBook.
+        const libraryBook = await manager.findOne(LibraryBook, {
+          where: { bookId: rental.bookId, libraryId: rental.libraryId },
           lock: { mode: 'pessimistic_write' },
         });
 
-        if (!book) {
-          throw new NotFoundException('Книга не найдена');
+        if (!libraryBook) {
+          throw new NotFoundException('Связь книги с библиотекой не найдена');
         }
 
-        book.availableCopies = clampCopies(
-          book.availableCopies + delta,
-          book.totalCopies,
+        libraryBook.availableCopies = clampCopies(
+          libraryBook.availableCopies + delta,
+          libraryBook.totalCopies,
         );
-        book.isAvailable = book.availableCopies > 0;
-        await manager.save(book);
+        await manager.save(libraryBook);
       }
 
       rental.status = status;
@@ -279,6 +275,25 @@ export class RentalsService implements IRentalService, ActiveRentalsChecker {
   async hasActiveRentalsForLibrary(libraryId: ID): Promise<boolean> {
     const count = await this.rentalsRepository.count({
       where: { libraryId, status: In(ACTIVE_STATUSES) },
+    });
+    return count > 0;
+  }
+
+  async hasActiveRentalsForLibraryBook(libraryBookId: ID): Promise<boolean> {
+    // Находим LibraryBook чтобы получить bookId и libraryId
+    const libraryBook = await this.libraryBooksRepository.findOne({
+      where: { id: libraryBookId },
+      select: { bookId: true, libraryId: true },
+    });
+    if (!libraryBook) {
+      return false;
+    }
+    const count = await this.rentalsRepository.count({
+      where: {
+        bookId: libraryBook.bookId,
+        libraryId: libraryBook.libraryId,
+        status: In(ACTIVE_STATUSES),
+      },
     });
     return count > 0;
   }

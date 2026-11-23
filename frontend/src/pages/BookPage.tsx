@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import ErrorAlert from '../components/common/ErrorAlert';
@@ -27,6 +27,23 @@ const BookPage = () => {
   }, [loadBook]);
 
   const notFound = !loading && !error && !book;
+
+  // Вычисляем общую доступность из нового формата
+  const totalAvailable = useMemo(() => {
+    if (!book?.availability) return 0;
+    return book.availability.reduce((sum, a) => sum + a.availableCopies, 0);
+  }, [book]);
+
+  const totalCopies = useMemo(() => {
+    if (!book?.availability) return 0;
+    return book.availability.reduce((sum, a) => sum + a.totalCopies, 0);
+  }, [book]);
+
+  // Для формы бронирования: используем первую доступную библиотеку
+  const firstAvailableLibrary = useMemo(() => {
+    if (!book?.availability?.length) return null;
+    return book.availability.find((a) => a.availableCopies > 0)?.library ?? book.availability[0]?.library ?? null;
+  }, [book]);
 
   return (
     <>
@@ -79,10 +96,16 @@ const BookPage = () => {
                       </div>
                     )}
                     <div className="book-page__row">
-                      <span className="book-page__label">Библиотека:</span>
-                      <span className="book-page__value">
-                        {book.library?.name || 'Библиотека не указана'}
-                      </span>
+                      <span className="book-page__label">Библиотеки:</span>
+                      <div className="book-page__libraries">
+                        {book.availability?.map((a) => (
+                          <span key={a.library.id} className="book-page__library-badge">
+                            {a.library.name}
+                          </span>
+                        )) || (
+                          <span>Не указано</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -93,18 +116,41 @@ const BookPage = () => {
                   <span className="book-page__label">Доступность:</span>
                   <span
                     className={`book-page__status ${
-                      book.availableCopies > 0 ? 'book-page__status--available' : 'book-page__status--unavailable'
+                      totalAvailable > 0 ? 'book-page__status--available' : 'book-page__status--unavailable'
                     }`}
                   >
-                    {book.availableCopies > 0 ? 'Доступна' : 'Нет в наличии'}
+                    {totalAvailable > 0 ? 'Доступна' : 'Нет в наличии'}
                   </span>
                 </div>
                 <div className="book-page__row">
-                  <span className="book-page__label">Экземпляры:</span>
+                  <span className="book-page__label">Экземпляры всего:</span>
                   <span className="book-page__value">
-                    {book.availableCopies} из {book.totalCopies}
+                    {totalAvailable} из {totalCopies}
                   </span>
                 </div>
+                {book.availability?.length && (
+                  <div className="book-page__availability-detail">
+                    <span className="book-page__label">По библиотекам:</span>
+                    <ul className="book-page__availability-list">
+                      {book.availability.map((a) => (
+                        <li key={a.library.id} className="book-page__availability-item">
+                          <span className="book-page__availability-library">{a.library.name}</span>
+                          <span className="book-page__availability-copies">
+                            {a.availableCopies} из {a.totalCopies}
+                            {' '}
+                            <span
+                              className={`book-page__availability-status ${
+                                a.isAvailable ? 'available' : 'unavailable'
+                              }`}
+                            >
+                              {a.isAvailable ? '✓' : '✗'}
+                            </span>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               {/* Бронирование: форма у клиента, подсказка о входе у гостя.
@@ -120,12 +166,12 @@ const BookPage = () => {
                 </div>
               )}
               {user?.role === 'client' &&
-                (book.library ? (
-                  <RentalForm book={book} />
+                (firstAvailableLibrary ? (
+                  <RentalForm book={book} library={firstAvailableLibrary} />
                 ) : (
                   <div className="book-page__booking-hint">
                     <p className="book-page__message">
-                      У книги не указана библиотека — бронирование недоступно.
+                      У книги нет доступных экземпляров в библиотеках — бронирование недоступно.
                     </p>
                   </div>
                 ))}

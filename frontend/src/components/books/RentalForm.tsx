@@ -7,20 +7,17 @@ import {
   createRental,
 } from '../../features/rentals/rentalsSlice';
 import { todayString, validateRentalDates } from '../../utils/rentals';
-import type { Book } from '../../types';
+import type { Book, BookLibrary } from '../../types';
 import ErrorAlert from '../common/ErrorAlert';
 
 interface RentalFormProps {
-  /** Бронируемая книга: из неё берём bookId и библиотеку. */
+  /** Бронируемая книга: из неё берём bookId. */
   book: Book;
+  /** Библиотека, в которой делается бронь. */
+  library: BookLibrary | null;
 }
 
-/**
- * Форма бронирования книги на странице /books/:id (спецификация, раздел 6.4).
- * Показывается только роли client: создать бронь может только она.
- * После успеха перенаправляет на страницу «Мои брони».
- */
-const RentalForm = ({ book }: RentalFormProps) => {
+const RentalForm = ({ book, library }: RentalFormProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { createLoading, createError } = useAppSelector(
@@ -32,7 +29,7 @@ const RentalForm = ({ book }: RentalFormProps) => {
   const [dateEnd, setDateEnd] = useState(todayString());
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const libraryId = book.library?.id;
+  const libraryId = library?.id;
 
   // Ошибка прошлой попытки бронирования не должна висеть на новой странице.
   useEffect(() => {

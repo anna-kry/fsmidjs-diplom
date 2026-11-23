@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientRentalsController } from './client-rentals.controller';
 import { BookRental } from './entities/book-rental.entity';
+import { LibraryBook } from '../libraries/entities/library-book.entity';
 import { ManagerRentalsController } from './manager-rentals.controller';
 import { RentalsService } from './rentals.service';
 
@@ -13,7 +14,7 @@ import { RentalsService } from './rentals.service';
  * для проверки 409 при удалении книг и библиотек.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([BookRental])],
+  imports: [TypeOrmModule.forFeature([BookRental, LibraryBook])],
   controllers: [ClientRentalsController, ManagerRentalsController],
   providers: [RentalsService],
   exports: [RentalsService],

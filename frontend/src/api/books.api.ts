@@ -43,8 +43,10 @@ export const booksApi = {
     if (data.description !== undefined && data.description !== null) {
       formData.append('description', data.description);
     }
-    formData.append('libraryId', String(data.libraryId));
-    formData.append('totalCopies', String(data.totalCopies));
+    // Только новый формат: libraries array
+    if (data.libraries?.length) {
+      formData.append('libraries', JSON.stringify(data.libraries));
+    }
     if (data.coverImage) {
       formData.append('coverImage', data.coverImage);
     }
@@ -67,11 +69,9 @@ export const booksApi = {
     if (data.description !== undefined && data.description !== null) {
       formData.append('description', data.description);
     }
-    if (data.libraryId !== undefined && data.libraryId !== null) {
-      formData.append('libraryId', String(data.libraryId));
-    }
-    if (data.totalCopies !== undefined && data.totalCopies !== null) {
-      formData.append('totalCopies', String(data.totalCopies));
+    // Только новый формат: libraries array
+    if (data.libraries?.length) {
+      formData.append('libraries', JSON.stringify(data.libraries));
     }
     if (data.coverImage) {
       formData.append('coverImage', data.coverImage);
@@ -83,5 +83,35 @@ export const booksApi = {
   /** Удаление книги (только admin). */
   async deleteBook(id: number): Promise<void> {
     await http.delete(`/admin/books/${id}`);
+  },
+
+  /** Добавить существующую книгу в новую библиотеку. */
+  async addLibrary(
+    bookId: number,
+    libraryId: number,
+    totalCopies: number,
+  ): Promise<{ id: number; bookId: number; libraryId: number; totalCopies: number; availableCopies: number }> {
+    const response = await http.post(`/admin/books/${bookId}/libraries`, {
+      libraryId,
+      totalCopies,
+    });
+    return response.data;
+  },
+
+  /** Обновить количество экземпляров книги в конкретной библиотеке. */
+  async updateLibraryCopies(
+    bookId: number,
+    libraryId: number,
+    totalCopies: number,
+  ): Promise<{ id: number; bookId: number; libraryId: number; totalCopies: number; availableCopies: number }> {
+    const response = await http.put(`/admin/books/${bookId}/libraries/${libraryId}`, {
+      totalCopies,
+    });
+    return response.data;
+  },
+
+  /** Удалить связь книги с библиотекой. */
+  async removeLibrary(bookId: number, libraryId: number): Promise<void> {
+    await http.delete(`/admin/books/${bookId}/libraries/${libraryId}`);
   },
 };

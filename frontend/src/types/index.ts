@@ -63,6 +63,20 @@ export interface BookLibrary {
   address: string;
 }
 
+/** Доступность книги в конкретной библиотеке. */
+export interface BookAvailability {
+  library: BookLibrary;
+  totalCopies: number;
+  availableCopies: number;
+  isAvailable: boolean;
+}
+
+/** Библиотека с количеством экземпляров для создания/обновления книги. */
+export interface LibraryCopiesInput {
+  libraryId: number;
+  totalCopies: number;
+}
+
 /** Книга из API (ответ toBookResponse): nullable-поля приходят как null. */
 export interface Book {
   id: ID;
@@ -71,12 +85,10 @@ export interface Book {
   year?: number | null;
   description?: string | null;
   coverImage?: string | null;
-  isAvailable: boolean;
-  totalCopies: number;
-  availableCopies: number;
   createdAt: string;
   updatedAt: string;
-  library?: BookLibrary | null;
+  /** Доступность книги в каждой библиотеке. */
+  availability: BookAvailability[];
 }
 
 /** Фильтры поиска книг (GET /api/common/books, раздел 6.3). */
@@ -93,8 +105,8 @@ export interface CreateBookInput {
   author: string;
   year?: number;
   description?: string;
-  libraryId: number;
-  totalCopies: number;
+  /** Массив библиотек с количеством экземпляров. */
+  libraries: LibraryCopiesInput[];
   coverImage?: File | null;
 }
 
@@ -104,8 +116,8 @@ export interface UpdateBookInput {
   author?: string;
   year?: number;
   description?: string;
-  libraryId?: number;
-  totalCopies?: number;
+  /** Массив библиотек с количеством экземпляров для обновления/добавления. */
+  libraries?: LibraryCopiesInput[];
   coverImage?: File | null;
 }
 

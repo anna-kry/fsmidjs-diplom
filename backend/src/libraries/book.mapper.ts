@@ -1,13 +1,22 @@
 import { Book } from './entities/book.entity';
+import { LibraryBook } from './entities/library-book.entity';
 
-/** Библиотека в ответе API: только публичные поля (спецификация, раздел 6.3). */
+/** Библиотека в ответе API: только публичные поля. */
 export interface BookLibraryResponse {
   id: number;
   name: string;
   address: string;
 }
 
-/** Ответ API для книги: без внутренних полей, с связанной библиотекой. */
+/** Информация о доступности книги в конкретной библиотеке. */
+export interface BookAvailabilityResponse {
+  library: BookLibraryResponse;
+  totalCopies: number;
+  availableCopies: number;
+  isAvailable: boolean;
+}
+
+/** Ответ API для книги: без внутренних полей, с доступностью по библиотекам. */
 export interface BookResponse {
   id: number;
   title: string;
@@ -15,20 +24,30 @@ export interface BookResponse {
   year: number;
   description: string;
   coverImage: string;
-  isAvailable: boolean;
-  totalCopies: number;
-  availableCopies: number;
   createdAt: Date;
   updatedAt: Date;
-  library: BookLibraryResponse | null;
+  availability: BookAvailabilityResponse[];
 }
 
 /**
  * Преобразует сущность книги в ответ API.
- * Библиотека сокращается до `{ id, name, address }` — так задано в контракте,
- * а явный список полей не даст утечь внутренним полям в будущем.
  */
 export function toBookResponse(book: Book): BookResponse {
+  const availability: BookAvailabilityResponse[] = (
+    book.libraryBooks ?? []
+  ).map((lb: LibraryBook) => ({
+    library: lb.library
+      ? {
+          id: lb.library.id,
+          name: lb.library.name,
+          address: lb.library.address,
+        }
+      : null!,
+    totalCopies: lb.totalCopies,
+    availableCopies: lb.availableCopies,
+    isAvailable: lb.availableCopies > 0,
+  }));
+
   return {
     id: book.id,
     title: book.title,
@@ -36,17 +55,8 @@ export function toBookResponse(book: Book): BookResponse {
     year: book.year,
     description: book.description,
     coverImage: book.coverImage,
-    isAvailable: book.isAvailable,
-    totalCopies: book.totalCopies,
-    availableCopies: book.availableCopies,
     createdAt: book.createdAt,
     updatedAt: book.updatedAt,
-    library: book.library
-      ? {
-          id: book.library.id,
-          name: book.library.name,
-          address: book.library.address,
-        }
-      : null,
+    availability,
   };
 }

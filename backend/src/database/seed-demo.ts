@@ -3,6 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { AppModule } from '../app.module';
 import { Book } from '../libraries/entities/book.entity';
 import { Library } from '../libraries/entities/library.entity';
+import { LibraryBook } from '../libraries/entities/library-book.entity';
 
 /** Одна книга демо-каталога (без обложек — реальные изображения не нужны). */
 interface DemoBook {
@@ -155,7 +156,7 @@ const DEMO_LIBRARIES: DemoLibrary[] = [
 ];
 
 /**
- * Создаёт демо-библиотеки и книги.
+ * Созёт демо-библиотеки и книги.
  * Повторный запуск безопасен: существующие по названию записи пропускаются,
  * пользователи и данные авторизации не затрагиваются.
  */
@@ -164,6 +165,9 @@ async function seedDemoData(app: Awaited<ReturnType<typeof NestFactory.create>>)
     strict: false,
   });
   const booksRepository = app.get(getRepositoryToken(Book), {
+    strict: false,
+  });
+  const libraryBooksRepository = app.get(getRepositoryToken(LibraryBook), {
     strict: false,
   });
 
@@ -188,32 +192,47 @@ async function seedDemoData(app: Awaited<ReturnType<typeof NestFactory.create>>)
     }
 
     for (const bookData of data.books) {
-      const existing = await booksRepository.findOne({
+      // Проверяем, есть ли уже такая книга в этой библиотеке
+      const existingLink = await libraryBooksRepository.findOne({
         where: {
-          title: bookData.title,
-          author: bookData.author,
           libraryId: library.id,
+          book: { title: bookData.title, author: bookData.author },
         },
+        relations: { book: true },
       });
 
-      if (existing) {
+      if (existingLink) {
         skippedBooks += 1;
         continue;
       }
 
-      // Обложек у демо-книг нет — фронтенд показывает плейсхолдер.
-      await booksRepository.save(
-        booksRepository.create({
-          title: bookData.title,
-          author: bookData.author,
-          year: bookData.year,
-          description: bookData.description,
+      // Ищем книгу по названию и автору (без привязки к библиотеке)
+      let book = await booksRepository.findOne({
+        where: { title: bookData.title, author: bookData.author },
+      });
+
+      if (!book) {
+        // Создаём новую книгу
+        book = await booksRepository.save(
+          booksRepository.create({
+            title: bookData.title,
+            author: bookData.author,
+            year: bookData.year,
+            description: bookData.description,
+            coverImage: null,
+          }),
+        );
+      }
+
+      // Создаём связь LibraryBook
+      await libraryBooksRepository.save(
+        libraryBooksRepository.create({
+          book,
+          bookId: book.id,
           library,
           libraryId: library.id,
           totalCopies: bookData.totalCopies,
           availableCopies: bookData.totalCopies,
-          isAvailable: bookData.totalCopies > 0,
-          coverImage: null,
         }),
       );
       createdBooks += 1;

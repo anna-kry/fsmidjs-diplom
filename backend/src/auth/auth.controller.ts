@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
+import 'express-session';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { AuthenticatedGuard } from '../common/guards/authenticated.guard';
 import { NotAuthenticatedGuard } from '../common/guards/not-authenticated.guard';
@@ -42,7 +43,7 @@ export class AuthController {
     // AuthGuard(@nestjs/passport) по умолчанию работает с session: false,
     // поэтому сохраняем вход в сессию вручную.
     await new Promise<void>((resolve, reject) => {
-      req.login(user, (err) => (err ? reject(err) : resolve()));
+      req.login(user, (err: Error | null) => (err ? reject(err) : resolve()));
     });
 
     return toAuthUser(user);
@@ -59,7 +60,7 @@ export class AuthController {
     // req.logout() из passport регенерирует сессию и приводит к установке новой
     // cookie взамен удаляемой, поэтому сессия уничтожается целиком.
     await new Promise<void>((resolve, reject) => {
-      req.session.destroy((err) => (err ? reject(err) : resolve()));
+      req.session.destroy((err: Error | null) => (err ? reject(err) : resolve()));
     });
     res.clearCookie('sid', { path: '/' });
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import ErrorAlert from '../../components/common/ErrorAlert';
@@ -15,7 +15,7 @@ import {
   updateBook,
 } from '../../features/books/booksSlice';
 import { fetchLibraries } from '../../features/libraries/librariesSlice';
-import type { Book, CreateBookInput, UpdateBookInput } from '../../types';
+import type { Book, CreateBookInput, UpdateBookInput, Library } from '../../types';
 
 const PAGE_SIZE = 12;
 const LIBRARIES_LIMIT = 100;
@@ -27,12 +27,18 @@ const EMPTY_FILTERS = {
   availableOnly: false,
 };
 
+/** Элемент выбора библиотеки с количеством экземпляров. */
+interface LibraryCopiesFormItem {
+  libraryId: number;
+  totalCopies: number;
+}
+
 /** Модальное окно создания или редактирования книги. */
 const BookFormModal = ({
   show,
   onHide,
   book,
-  libraryId,
+  libraries,
   onSave,
   loading,
   error,
@@ -40,7 +46,7 @@ const BookFormModal = ({
   show: boolean;
   onHide: () => void;
   book: Book | null;
-  libraryId: number | null;
+  libraries: Library[];
   onSave: (data: CreateBookInput | UpdateBookInput) => void;
   loading: boolean;
   error: string | null;
@@ -52,9 +58,6 @@ const BookFormModal = ({
     book?.year != null ? String(book.year) : '',
   );
   const [description, setDescription] = useState(book?.description ?? '');
-  const [totalCopies, setTotalCopies] = useState(
-    book?.totalCopies != null ? String(book.totalCopies) : '',
-  );
   const [coverImage, setCoverImage] = useState<File | null>(null);
   /** Объект-URL для предпросмотра выбранного файла обложки. */
   const [coverPreview, setCoverPreview] = useState<string | null>(
@@ -62,8 +65,15 @@ const BookFormModal = ({
   );
   const coverPreviewRef = useRef<string | null>(null);
 
+  // Для каждой библиотеки: libraryId и totalCopies
+  const [libraryCopies, setLibraryCopies] = useState<LibraryCopiesFormItem[]>(
+    book?.availability?.map((a) => ({
+      libraryId: a.library.id,
+      totalCopies: a.totalCopies,
+    })) ?? [{ libraryId: 0, totalCopies: 1 }],
+  );
+
   const isEdit = book !== null;
-  const fixedLibraryId = libraryId ?? (book?.library?.id ?? null);
 
   /** Освобождаем объект-URL при размонтировании модала. */
   useEffect(() => {
@@ -104,17 +114,37 @@ const BookFormModal = ({
     return book?.coverImage ?? null;
   };
 
+  const addLibraryRow = () => {
+    setLibraryCopies([...libraryCopies, { libraryId: 0, totalCopies: 1 }]);
+  };
+
+  const removeLibraryRow = (index: number) => {
+    if (libraryCopies.length <= 1) return;
+    setLibraryCopies(libraryCopies.filter((_, i) => i !== index));
+  };
+
+  const updateLibraryCopies = (index: number, field: 'libraryId' | 'totalCopies', value: number) => {
+    setLibraryCopies(
+      libraryCopies.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item,
+      ),
+    );
+  };
+
   const buildInput = (): CreateBookInput | UpdateBookInput | null => {
     if (!title.trim() || !author.trim()) return null;
-    if (!totalCopies.trim()) return null;
-    if (!fixedLibraryId) return null;
+    if (libraryCopies.some((lc) => lc.libraryId === 0 || lc.totalCopies < 1)) {
+      return null;
+    }
 
     const data: CreateBookInput | UpdateBookInput = {
       title: title.trim(),
       author: author.trim(),
       description: description.trim() || undefined,
-      libraryId: fixedLibraryId,
-      totalCopies: Number(totalCopies.trim()),
+      libraries: libraryCopies.map((lc) => ({
+        libraryId: lc.libraryId,
+        totalCopies: lc.totalCopies,
+      })),
     };
     if (year.trim()) {
       data.year = Number(year.trim());
@@ -206,30 +236,64 @@ const BookFormModal = ({
                   />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">Библиотека</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={fixedLibraryId ? String(fixedLibraryId) : ''}
-                    readOnly
-                  />
-                  {fixedLibraryId === null && (
-                    <div className="form-text text-danger">
-                      Библиотека не выбрана.
-                    </div>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Количество экземпляров</label>
-                  <input
-                    type="number"
-                    min={1}
-                    className="form-control"
-                    value={totalCopies}
-                    onChange={(e) => setTotalCopies(e.target.value)}
-                    placeholder="Количество экземпляров"
-                    required
-                  />
+                  <label className="form-label">Библиотеки и экземпляры</label>
+                  <div className="admin-books__library-copies">
+                    {libraryCopies.map((lc, index) => (
+                      <div
+                        key={index}
+                        className="admin-books__library-copies-row d-flex gap-2 mb-2"
+                      >
+                        <Form.Select
+                          className="form-select"
+                          style={{ flex: 2, minWidth: 200 }}
+                          value={lc.libraryId || ''}
+                          onChange={(e) =>
+                            updateLibraryCopies(index, 'libraryId', Number(e.target.value) || 0)
+                          }
+                          aria-label={`Библиотека ${index + 1}`}
+                        >
+                          <option value="">— Выберите библиотеку —</option>
+                          {libraries.map((lib) => (
+                            <option key={lib.id} value={lib.id}>
+                              {lib.name} ({lib.address})
+                            </option>
+                          ))}
+                        </Form.Select>
+                        <Form.Control
+                          type="number"
+                          min={1}
+                          className="form-control"
+                          style={{ flex: 1, minWidth: 100 }}
+                          value={lc.totalCopies}
+                          onChange={(e) =>
+                            updateLibraryCopies(index, 'totalCopies', Number(e.target.value) || 1)
+                          }
+                          placeholder="Экземпляров"
+                          aria-label={`Экземпляры ${index + 1}`}
+                        />
+                        {libraryCopies.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => removeLibraryRow(index)}
+                            className="align-self-end"
+                            title="Удалить библиотеку"
+                          >
+                            ×
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={addLibraryRow}
+                    >
+                      + Добавить библиотеку
+                    </Button>
+                  </div>
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Обложка книги</label>
@@ -274,7 +338,7 @@ const BookFormModal = ({
                 type="button"
                 className="btn btn-primary"
                 onClick={() => formRef.current?.requestSubmit()}
-                disabled={loading || !fixedLibraryId}
+                disabled={loading || libraryCopies.some((lc) => lc.libraryId === 0 || lc.totalCopies < 1)}
               >
                 {loading ? 'Сохранение…' : isEdit ? 'Сохранить' : 'Создать'}
               </button>
@@ -542,7 +606,7 @@ const AdminBooksPage = () => {
           setEditingBook(null);
         }}
         book={editingBook}
-        libraryId={libraryId}
+        libraries={libraries}
         onSave={handleSave}
         loading={createLoading || updateLoading}
         error={createError || updateError}
